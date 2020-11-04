@@ -301,6 +301,28 @@
         
       </li>
     </ul>
+	<!-- 运行天数 -->
+    <ul>
+        <li><span id="runtime_span"></span></li>
+		<script type="text/javascript">            
+    function show_runtime() {
+        window.setTimeout("show_runtime()", 1000);
+        X = new Date("11/04/2020 22:22:22");
+        Y = new Date();
+        T = (Y.getTime() - X.getTime());
+        M = 24 * 60 * 60 * 1000;
+        a = T / M;
+        A = Math.floor(a);
+        b = (a - A) * 24;
+        B = Math.floor(b);
+        c = (b - B) * 60;
+        C = Math.floor((b - B) * 60);
+        D = Math.floor((c - C) * 60);
+        runtime_span.innerHTML = "小破站在各种崩坏中坚持了: " + A + "天" + B + "小时" + C + "分" + D + "秒"
+    }
+    show_runtime();
+</script>
+    </ul>
   </div>
 </footer>
       <div class="float_btns">
@@ -345,7 +367,7 @@
     </li>
     
     <li class="nav-item">
-      <a class="nav-item-link" href="/2019/about">关于我</a>
+      <a class="nav-item-link" href="/about">关于我</a>
     </li>
     
     <li class="nav-item">
