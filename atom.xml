@@ -6,7 +6,7 @@
   <link href="http://example.com/atom.xml" rel="self"/>
   
   <link href="http://example.com/"/>
-  <updated>2020-11-04T16:16:48.654Z</updated>
+  <updated>2020-11-05T07:18:06.714Z</updated>
   <id>http://example.com/</id>
   
   <author>
@@ -17,18 +17,19 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>Hexo博客搭建</title>
+    <title>Hexo博客搭建（Windows）</title>
     <link href="http://example.com/2020/11/04/%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/"/>
     <id>http://example.com/2020/11/04/%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/</id>
     <published>2020-11-04T15:58:58.000Z</published>
-    <updated>2020-11-04T16:16:48.654Z</updated>
+    <updated>2020-11-05T07:18:06.714Z</updated>
     
     
       
       
         
         
-    <summary type="html">&lt;p&gt;突然就想要有一个自己的博客，契机是NKU丨🐏开始在CSDN上发自己做过的东西，再加上之前在大二偶然发现的南开的学姐的博客上学到了好多东西，便开始着手搭建自己的博客，共费时两个晚上方有了简陋的博客。感谢素未谋面甚至不知道我的存在的学姐&lt;a</summary>
+    <summary type="html">&lt;p&gt;突然就想要有一个自己的博客，契机是NKU丨🐏开始在CSDN上发自己做过的东西，再加上之前在大二偶然发现的南开的学姐的博客上学到了好多东西，便开始着手搭建自己的博客，共费时两个晚上方有了简陋的博客。以下大概记录下建立博客的过程以及踩过的坑。&lt;/p&gt;
+&lt;h1</summary>
         
       
     
