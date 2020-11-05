@@ -3,11 +3,12 @@
   <entry>
     <title>Hexo博客搭建（Windows）</title>
     <url>/2020/11/04/%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/</url>
-    <content><![CDATA[<p>突然就想要有一个自己的博客，契机是NKU丨🐏开始在CSDN上发自己做过的东西，再加上之前在大二偶然发现的南开的学姐的博客上学到了好多东西，便开始着手搭建自己的博客，共费时两个晚上方有了简陋的博客。以下大概记录下建立博客的过程以及踩过的坑。</p>
-<h1 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h1><p>##配置Github<br>注册账号之类就不赘述了，新建一个<code>Repository</code>，名字必须是<code>yourusername.github.io</code>，比如我的就是<code>YozoOba.github.io</code>，选择public，其他可以跳过直接创建就好了。</p>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><p>突然就想要有一个自己的博客，契机是NKU丨🐏开始在CSDN上发自己做过的东西，再加上之前在大二偶然发现的南开的学姐的博客上学到了好多东西，便开始着手搭建自己的博客，共费时两个晚上方有了简陋的博客。以下大概记录下建立博客的过程以及踩过的坑。</p>
+<h1 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h1><h2 id="配置Github"><a href="#配置Github" class="headerlink" title="配置Github"></a>配置Github</h2><p>注册账号之类就不赘述了，新建一个<code>Repository</code>，名字必须是<code>yourusername.github.io</code>，比如我的就是<code>YozoOba.github.io</code>，选择public，其他可以跳过直接创建就好了。</p>
 <h2 id="安装node-js"><a href="#安装node-js" class="headerlink" title="安装node.js"></a>安装node.js</h2><p>直接从官网下载<a href="https://nodejs.org/zh-cn/">node.js</a>,一路默认设置+next安装完成，安装地址可以改一下。<br>安装完成后便可以使用npm了，注意不是nmp（我用的时候一直报错，直到百度搜索的时候它提示我是不是要搜索“npm”才意识到，orz）<br>打开cmd输入<code>node -v</code>可以查看node.js版本来确认是否安装完成</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">C:\Users\14616&gt;node -v</span><br><span class="line">v14.15.0</span><br></pre></td></tr></table></figure>
-<p>这样就算安装成功了<br>##安装Git<br>同样直接官网下载<a href="https://git-scm.com/download/win">Git</a>，安装完成之后设置环境变量（一般安装的时候都会自动设置的，如果安装后没法使用Git可以考虑是不是没有设置环境变量）</p>
+<p>这样就算安装成功了</p>
+<h2 id="安装Git"><a href="#安装Git" class="headerlink" title="安装Git"></a>安装Git</h2><p>同样直接官网下载<a href="https://git-scm.com/download/win">Git</a>，安装完成之后设置环境变量（一般安装的时候都会自动设置的，如果安装后没法使用Git可以考虑是不是没有设置环境变量）</p>
 <p>下载完成后随意一个地方点右键可以打开<code>Git Bash</code>，先配置你的用户信息，在里面输入</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git config --global user.name &quot;你的GitHub用户名&quot;</span><br><span class="line">git config --global user.email &quot;你的GitHub邮箱&quot;</span><br></pre></td></tr></table></figure>
 <p>然后再生成ssh密钥，这一步的目的是为设置Github密钥，这样就不用每次推送都输入密码。</p>
@@ -15,11 +16,11 @@
 <p>然后三个回车，找到生成的<code>.ssh</code>文件夹，一般存放在<code>C\users</code>目录下，复制id_rsa.pub中的密钥。</p>
 <p>也可以直接右键打开Git Gui，点击左上角<code>Help</code>中的<code>Show SSH Key </code>按照提示生成ssh密钥， 同样三个回车，它会直接显示出密钥直接复制，不需要再去文件里复制</p>
 <p>接下来打开Github，在<code>Setting</code>里找到<code>SSH and GPG keys</code>新建SSH，复制你本地生成的<code>public key</code>进去，然后保存，它会让你输入Github密码，然后就成功了。</p>
-<p>在Git Bash中输入ssh <a href="mailto:&#x67;&#105;&#x74;&#64;&#103;&#x69;&#116;&#104;&#117;&#98;&#46;&#99;&#x6f;&#x6d;">&#x67;&#105;&#x74;&#64;&#103;&#x69;&#116;&#104;&#117;&#98;&#46;&#99;&#x6f;&#x6d;</a>来验证是否成功，第一次验证的话会让你输入一个yes，显示successfully便成功了，but后面的语句不需要看</p>
+<p>在Git Bash中输入ssh <a href="mailto:&#x67;&#x69;&#116;&#64;&#103;&#105;&#x74;&#104;&#x75;&#98;&#x2e;&#99;&#x6f;&#109;">&#x67;&#x69;&#116;&#64;&#103;&#105;&#x74;&#104;&#x75;&#98;&#x2e;&#99;&#x6f;&#109;</a>来验证是否成功，第一次验证的话会让你输入一个yes，显示successfully便成功了，but后面的语句不需要看</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ssh git@github.com</span><br></pre></td></tr></table></figure>
-<p>##安装Hexo<br>hexo是通过npm命令安装的<br>首先建立一个hexo文件夹，放在你喜欢的位置，在该文件夹打开cmd或者power shell，不过推荐Git Bash，我用前两个的时候总莫名奇妙报错，用了Git Bash就顺畅许多嘿嘿。<br>安装hexo</p>
+<h2 id="安装Hexo"><a href="#安装Hexo" class="headerlink" title="安装Hexo"></a>安装Hexo</h2><p>hexo是通过npm命令安装的<br>首先建立一个hexo文件夹，放在你喜欢的位置，在该文件夹打开cmd或者power shell，不过推荐Git Bash，我用前两个的时候总莫名奇妙报错，用了Git Bash就顺畅许多嘿嘿。<br>安装hexo</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">npm install -g hexo</span><br></pre></td></tr></table></figure>
-<p>#本地建立博客<br>在hexo文件夹下打开Git Bash</p>
+<h1 id="本地建立博客"><a href="#本地建立博客" class="headerlink" title="本地建立博客"></a>本地建立博客</h1><p>在hexo文件夹下打开Git Bash</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">hexo init blog&#x2F;&#x2F;blog是项目的名字，你可以叫别的或者省略</span><br><span class="line">cd blog</span><br><span class="line">hexo g&#x2F;&#x2F;编译</span><br><span class="line">hexo s&#x2F;&#x2F;s就是server，执行完就可以通过4000端口预览网站</span><br></pre></td></tr></table></figure>
 <p>在浏览器输入<code>localhost：4000</code>便可以看到一个页面，这是默认的landscape主题<br>#将博客部署到Github<br>这里我们之前在Github上配置的仓库就有了用处，首先打开blog文件夹里的_config.yml文件进行配置，找到最下方的deploy进行配置，repo后面是你对应的仓库地址，由于已经设置过ssh，所以不需要写成https之类格式。<br>注意：<strong>冒号之后一定要有一个空格，不然会报错！冒号之后一定要有一个空格，不然会报错！冒号之后一定要有一个空格，不然会报错！</strong></p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repo: git@github.com:yourname&#x2F;yourname.github.io.git&#x2F;&#x2F;填充上yourname即可</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
@@ -28,7 +29,8 @@
 <p>完成后输入</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure>
 <p>其中<code>hexo d</code>就是将你网站部署到GitHub上的命令，完成后再访问<code>https://yourname.github.io/</code>便会惊奇的发现你能通过互联网访问到了！！！</p>
-<p>##设置主题<br>我用的是Ayer主题，作者的使用文档真的写的太太太详细了，设置主题这一部分基本没什么难度，直接参考<a href="https://shen-yu.gitee.io/2019/ayer/">Ayer</a><br>按照作者的嘱咐安装好各种插件，修改好配置文件记得加空格就没多大问题。<br>##博客使用<br>其实执行到上一步之后我是一脸懵逼的，我究竟该怎么使用这个博客呢，为啥侧边栏就只有一个主页和一个归档能点其他都是404？？？<br>然后就去翻了好久hexo的官方文档，并且又去找了好多博客看，最后终于发现了是因为没有建立对应的page<br>按照<a href="https://shen-yu.gitee.io/2019/ayer/">Ayer</a>的提示，然后打开终端（记得要在blog文件夹打开，不然无论你输入什么都是报错）<br>首先输入以下创建分类</p>
+<h1 id="设置主题"><a href="#设置主题" class="headerlink" title="设置主题"></a>设置主题</h1><p>我用的是Ayer主题，作者的使用文档真的写的太太太详细了，设置主题这一部分基本没什么难度，直接参考<a href="https://shen-yu.gitee.io/2019/ayer/">Ayer</a><br>按照作者的嘱咐安装好各种插件，修改好配置文件记得加空格就没多大问题。</p>
+<h1 id="博客使用"><a href="#博客使用" class="headerlink" title="博客使用"></a>博客使用</h1><p>其实执行到上一步之后我是一脸懵逼的，我究竟该怎么使用这个博客呢，为啥侧边栏就只有一个主页和一个归档能点其他都是404？？？<br>然后就去翻了好久hexo的官方文档，并且又去找了好多博客看，最后终于发现了是因为没有建立对应的page<br>按照<a href="https://shen-yu.gitee.io/2019/ayer/">Ayer</a>的提示，然后打开终端（记得要在blog文件夹打开，不然无论你输入什么都是报错）<br>首先输入以下创建分类</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">hexo new page categories</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <p>然后将以下内容复制到/source/categories/index.md 文件中</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">---</span><br><span class="line">title: categories</span><br><span class="line">type: &quot;categories&quot;</span><br><span class="line">layout: &quot;categories&quot;</span><br><span class="line">---</span><br></pre></td></tr></table></figure>
@@ -44,6 +46,17 @@
 <p>然后在终端中输入</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">hexo clean </span><br><span class="line">hexo g</span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure>
 <p>等到命令执行完，我们再访问博客，便会发现已经有了相对应的标签和分类，至此，博客初步搭建完成，<em>★,°</em>:.☆(￣▽￣)/$:<em>.°★</em> 。</p>
+<h1 id="搭建过程中报错及解决办法"><a href="#搭建过程中报错及解决办法" class="headerlink" title="搭建过程中报错及解决办法"></a>搭建过程中报错及解决办法</h1><h2 id="关于副标题不显示的问题"><a href="#关于副标题不显示的问题" class="headerlink" title="关于副标题不显示的问题"></a>关于副标题不显示的问题</h2><p>在markdown中“#”与“##”之类的后面要先加一个空格在输入内容，否则可能不被认为是标题之类的而显示成##xxx之类的奇怪的东西</p>
+<h2 id="nmp不是内部命令，也不是可运行的程序"><a href="#nmp不是内部命令，也不是可运行的程序" class="headerlink" title="nmp不是内部命令，也不是可运行的程序"></a>nmp不是内部命令，也不是可运行的程序</h2><p>orz这个是因为把npm敲成了nmp哈哈哈。</p>
+<h2 id="git不是内部或外部命令-也不是可运行的程序"><a href="#git不是内部或外部命令-也不是可运行的程序" class="headerlink" title="git不是内部或外部命令,也不是可运行的程序"></a>git不是内部或外部命令,也不是可运行的程序</h2><p>这个可能是因为没有安装Git或者没有在系统变量里配置Git</p>
+<h2 id="hexo-无法加载文件-因为在此系统上禁止运行脚本。"><a href="#hexo-无法加载文件-因为在此系统上禁止运行脚本。" class="headerlink" title="hexo : 无法加载文件 ,因为在此系统上禁止运行脚本。"></a>hexo : 无法加载文件 ,因为在此系统上禁止运行脚本。</h2><p>以管理员身份打开cmd或者power shell，输入<code>set-executionpolicy remotesighed</code>选择是即可解决</p>
+<h2 id="hexo报错Usage-hexo"><a href="#hexo报错Usage-hexo" class="headerlink" title="hexo报错Usage: hexo "></a>hexo报错Usage: hexo <command></h2><p>这个前面提到过，是因为没有在blog文件下打开终端，只需要cd 到你创建的blog之类的文件夹就行了</p>
+<h2 id="can-not-read-an-implicit-mapping-pair-a-colon-is-missed-at-line-109-column"><a href="#can-not-read-an-implicit-mapping-pair-a-colon-is-missed-at-line-109-column" class="headerlink" title="can not read an implicit mapping pair; a colon is missed at line 109, column"></a>can not read an implicit mapping pair; a colon is missed at line 109, column</h2><p>这个是前面提到的空格问题，在它报错的地方加上应该有点空格就好</p>
+<h2 id="fatal-protocol-‘github-https’-is-not-supported"><a href="#fatal-protocol-‘github-https’-is-not-supported" class="headerlink" title="fatal: protocol ‘github:https’ is not supported"></a>fatal: protocol ‘github:https’ is not supported</h2><p>貌似还是因为空格问题，然后顺便把https样式的url改成了带@的那个<br>##Could not resolve hostname github: Name or service not known<br>这个我记得我是用了Git Bash就好了</p>
+<h2 id="Spawn-failed"><a href="#Spawn-failed" class="headerlink" title="Spawn failed"></a>Spawn failed</h2><p>这个把博客文档里的.git删除掉，然后再在删除的地方输入以下命令新建一个仓库</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git init</span><br></pre></td></tr></table></figure>
+<h2 id="not-a-git-repository-or-any-of-the-parent-directories"><a href="#not-a-git-repository-or-any-of-the-parent-directories" class="headerlink" title="not a git repository (or any of the parent directories)"></a>not a git repository (or any of the parent directories)</h2><p>这个是因为上面那个错误把.git删了没有新建，<code>git init</code><br>之后就好了</p>
+<h2 id="err-YAMLException-can-not-read-a-block-mapping-entry"><a href="#err-YAMLException-can-not-read-a-block-mapping-entry" class="headerlink" title="err: YAMLException: can not read a block mapping entry"></a>err: YAMLException: can not read a block mapping entry</h2><p>还是空格问题，找到应该加空格的地方加空格就好了</p>
 ]]></content>
       <tags>
         <tag>hexo</tag>
