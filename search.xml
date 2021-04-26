@@ -1,27 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Bugku Web25</title>
-    <url>/2021/04/26/Bugku-Web25/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Web-25"><a href="#Bugku-Web-25" class="headerlink" title="Bugku Web 25"></a>Bugku Web 25</h1><blockquote>
-<p>提示是SQL约束攻击</p>
-</blockquote>
-<h2 id="解题过程"><a href="#解题过程" class="headerlink" title="解题过程"></a>解题过程</h2><p>&emsp;&emsp;进入场景，看到是一个web管理系统，需要登陆，旁边可以看到注册的通道，先随意注册一个账号<br><img src="https://i.loli.net/2021/04/26/T3y4NEZFHDtqQ8a.png" alt="1.png"><br><img src="https://i.loli.net/2021/04/26/Itpq6YvGl3Z4OP2.png" alt="2.jpg"><br><img src="https://i.loli.net/2021/04/26/xUlTGruCJoZKLm9.png" alt="3.png"></p>
-<p>&emsp;&emsp;推测只有管理员账户才会显示出flag，利用SQL约束攻击，SQL语句会将查询的字段后的空格格式化，随意我们注册的用户名为<code>admin </code>，此时再登录就可以得到flag<br><img src="https://i.loli.net/2021/04/26/iIjEn9GfueochHr.png" alt="4.png"></p>
-<h2 id="SQL约束攻击"><a href="#SQL约束攻击" class="headerlink" title="SQL约束攻击"></a>SQL约束攻击</h2><p>&emsp;&emsp;例如下面的代码中，输入的字符串末尾空格会被删除，<code>admin</code>与<code>admin     </code>是一样的,这是因为在“字符串比较”期间，SQL会在内部使用空格来填充字符串，以便在比较之前使其它们的长度保持一致。</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">$username = mysql_real_escape_string($_GET[&#x27;username&#x27;]);</span><br><span class="line">$password = mysql_real_escape_string($_GET[&#x27;password&#x27;]);</span><br><span class="line">$query = &quot;<span class="keyword">SELECT</span> *</span><br><span class="line">          <span class="keyword">FROM</span> <span class="keyword">users</span></span><br><span class="line">          <span class="keyword">WHERE</span> username=<span class="string">&#x27;$username&#x27;</span><span class="string">&quot;;</span></span><br><span class="line"><span class="string">$res = mysql_query($query, $database);</span></span><br><span class="line"><span class="string">if($res) &#123;</span></span><br><span class="line"><span class="string">  if(mysql_num_rows($res) &gt; 0) &#123;</span></span><br><span class="line"><span class="string">  &#125;</span></span><br><span class="line"><span class="string">  else &#123;</span></span><br><span class="line"><span class="string">    $query = &quot;</span><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="keyword">users</span>(username, <span class="keyword">password</span>)</span><br><span class="line">              <span class="keyword">VALUES</span> (<span class="string">&#x27;$username&#x27;</span>,<span class="string">&#x27;$password&#x27;</span>)<span class="string">&quot;;</span></span><br></pre></td></tr></table></figure>
-<p>&emsp;&emsp; 当注册时，后台一般先select一下用户名看看是否存在，然后再insert</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">$username = mysql_real_escape_string($_GET[&#x27;username&#x27;]);</span><br><span class="line">$password = mysql_real_escape_string($_GET[&#x27;password&#x27;]);</span><br><span class="line">$query = &quot;<span class="keyword">SELECT</span> *</span><br><span class="line">          <span class="keyword">FROM</span> <span class="keyword">users</span></span><br><span class="line">          <span class="keyword">WHERE</span> username=<span class="string">&#x27;$username&#x27;</span><span class="string">&quot;;</span></span><br><span class="line"><span class="string">$res = mysql_query($query, $database);</span></span><br><span class="line"><span class="string">if($res) &#123;</span></span><br><span class="line"><span class="string">  if(mysql_num_rows($res) &gt; 0) &#123;</span></span><br><span class="line"><span class="string">  &#125;</span></span><br><span class="line"><span class="string">  else &#123;</span></span><br><span class="line"><span class="string">    $query = &quot;</span><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="keyword">users</span>(username, <span class="keyword">password</span>)</span><br><span class="line">              <span class="keyword">VALUES</span> (<span class="string">&#x27;$username&#x27;</span>,<span class="string">&#x27;$password&#x27;</span>)<span class="string">&quot;;</span></span><br></pre></td></tr></table></figure>
-<p>这里注册时使用用户名+【大量空格】和随机密码注册即可完成攻击。</p>
-<p>    主要原理就是<code>insert</code>时候有<code>varchar(n)</code>的限制，大于n的时候会截取前n个存入。在数据库对字符串进行比较时，即select操作，如果两个字符串的长度不一样，则会将较短的字符串末尾填充空格，使两个字符串的长度一致。注册时select语句不会将<code>admin+[大量空格]</code>删减到n位，所以不会被select查出与admin重复，不会返回数据，接下来就可以插入<code>admin+[空格]（截取）</code>和自定义密码了。</p>
-<p>    如果使用用户名<code>“vampire”</code>和密码“<code>random_pass</code>”登录的话，对比时是<code>admin</code>与<code>admin+[大量空格]</code>，会将前面的<code>admin</code>添加空格与后面的长度相同在进行对比，那么返回的只能是我们自己注册的用户信息，而不会返回目标用户信息。SQL查询语句是一个and操作，如果密码不一样怎么会把目标用户的信息也返回回来?</p>
-<p>    当登陆时使用admin与自定义密码登陆，数据库将返回我们自己注册的账户信息，但是注意此处的<code>return $username</code>，虽然此时查询出来的是我们自己的用户信息，但是返回的用户名则是目标的用户名。如果此后的业务逻辑直接以该用户名为准，则我们就达到了水平越权的目的。</p>
-]]></content>
-      <tags>
-        <tag>Bugku Web</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>区块链学习</title>
     <url>/2020/11/11/20201111/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><hr>
@@ -253,6 +232,42 @@
 ]]></content>
       <tags>
         <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Bugku Web25</title>
+    <url>/2021/04/26/Bugku-Web25/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Web-25"><a href="#Bugku-Web-25" class="headerlink" title="Bugku Web 25"></a>Bugku Web 25</h1><blockquote>
+<p>提示是SQL约束攻击</p>
+</blockquote>
+<h2 id="解题过程"><a href="#解题过程" class="headerlink" title="解题过程"></a>解题过程</h2><p>&emsp;&emsp;进入场景，看到是一个web管理系统，需要登陆，旁边可以看到注册的通道，先随意注册一个账号<br><img src="https://i.loli.net/2021/04/26/T3y4NEZFHDtqQ8a.png" alt="1.png"><br><img src="https://i.loli.net/2021/04/26/Itpq6YvGl3Z4OP2.png" alt="2.jpg"><br><img src="https://i.loli.net/2021/04/26/xUlTGruCJoZKLm9.png" alt="3.png"></p>
+<p>&emsp;&emsp;推测只有管理员账户才会显示出flag，利用SQL约束攻击，SQL语句会将查询的字段后的空格格式化，随意我们注册的用户名为<code>admin </code>，此时再登录就可以得到flag<br><img src="https://i.loli.net/2021/04/26/iIjEn9GfueochHr.png" alt="4.png"></p>
+<h2 id="SQL约束攻击"><a href="#SQL约束攻击" class="headerlink" title="SQL约束攻击"></a>SQL约束攻击</h2><p>&emsp;&emsp;例如下面的代码中，输入的字符串末尾空格会被删除，<code>admin</code>与<code>admin     </code>是一样的,这是因为在“字符串比较”期间，SQL会在内部使用空格来填充字符串，以便在比较之前使其它们的长度保持一致。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">$username = mysql_real_escape_string($_GET[&#x27;username&#x27;]);</span><br><span class="line">$password = mysql_real_escape_string($_GET[&#x27;password&#x27;]);</span><br><span class="line">$query = &quot;<span class="keyword">SELECT</span> *</span><br><span class="line">          <span class="keyword">FROM</span> <span class="keyword">users</span></span><br><span class="line">          <span class="keyword">WHERE</span> username=<span class="string">&#x27;$username&#x27;</span><span class="string">&quot;;</span></span><br><span class="line"><span class="string">$res = mysql_query($query, $database);</span></span><br><span class="line"><span class="string">if($res) &#123;</span></span><br><span class="line"><span class="string">  if(mysql_num_rows($res) &gt; 0) &#123;</span></span><br><span class="line"><span class="string">  &#125;</span></span><br><span class="line"><span class="string">  else &#123;</span></span><br><span class="line"><span class="string">    $query = &quot;</span><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="keyword">users</span>(username, <span class="keyword">password</span>)</span><br><span class="line">              <span class="keyword">VALUES</span> (<span class="string">&#x27;$username&#x27;</span>,<span class="string">&#x27;$password&#x27;</span>)<span class="string">&quot;;</span></span><br></pre></td></tr></table></figure>
+<p>&emsp;&emsp; 当注册时，后台一般先select一下用户名看看是否存在，然后再insert</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">$username = mysql_real_escape_string($_GET[&#x27;username&#x27;]);</span><br><span class="line">$password = mysql_real_escape_string($_GET[&#x27;password&#x27;]);</span><br><span class="line">$query = &quot;<span class="keyword">SELECT</span> *</span><br><span class="line">          <span class="keyword">FROM</span> <span class="keyword">users</span></span><br><span class="line">          <span class="keyword">WHERE</span> username=<span class="string">&#x27;$username&#x27;</span><span class="string">&quot;;</span></span><br><span class="line"><span class="string">$res = mysql_query($query, $database);</span></span><br><span class="line"><span class="string">if($res) &#123;</span></span><br><span class="line"><span class="string">  if(mysql_num_rows($res) &gt; 0) &#123;</span></span><br><span class="line"><span class="string">  &#125;</span></span><br><span class="line"><span class="string">  else &#123;</span></span><br><span class="line"><span class="string">    $query = &quot;</span><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="keyword">users</span>(username, <span class="keyword">password</span>)</span><br><span class="line">              <span class="keyword">VALUES</span> (<span class="string">&#x27;$username&#x27;</span>,<span class="string">&#x27;$password&#x27;</span>)<span class="string">&quot;;</span></span><br></pre></td></tr></table></figure>
+<p>这里注册时使用用户名+【大量空格】和随机密码注册即可完成攻击。</p>
+<p>    主要原理就是<code>insert</code>时候有<code>varchar(n)</code>的限制，大于n的时候会截取前n个存入。在数据库对字符串进行比较时，即select操作，如果两个字符串的长度不一样，则会将较短的字符串末尾填充空格，使两个字符串的长度一致。注册时select语句不会将<code>admin+[大量空格]</code>删减到n位，所以不会被select查出与admin重复，不会返回数据，接下来就可以插入<code>admin+[空格]（截取）</code>和自定义密码了。</p>
+<p>    如果使用用户名<code>“vampire”</code>和密码“<code>random_pass</code>”登录的话，对比时是<code>admin</code>与<code>admin+[大量空格]</code>，会将前面的<code>admin</code>添加空格与后面的长度相同在进行对比，那么返回的只能是我们自己注册的用户信息，而不会返回目标用户信息。SQL查询语句是一个and操作，如果密码不一样怎么会把目标用户的信息也返回回来?</p>
+<p>    当登陆时使用admin与自定义密码登陆，数据库将返回我们自己注册的账户信息，但是注意此处的<code>return $username</code>，虽然此时查询出来的是我们自己的用户信息，但是返回的用户名则是目标的用户名。如果此后的业务逻辑直接以该用户名为准，则我们就达到了水平越权的目的。</p>
+]]></content>
+      <tags>
+        <tag>Bugku Web</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Bugku Web26</title>
+    <url>/2021/04/26/Bugku-Web26/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Web26"><a href="#Bugku-Web26" class="headerlink" title="Bugku Web26"></a>Bugku Web26</h1><blockquote>
+<p>Google</p>
+</blockquote>
+<p>进入场景，只有一行小字</p>
+<blockquote>
+<p>are you from google<br>推测应该将Referer改为谷歌的网址<br>用hackbar或者burpsuite都可以做到<br><img src="https://i.loli.net/2021/04/26/csMgnaRJ1Vr5OSz.png" alt="1.png"><br><img src="https://i.loli.net/2021/04/26/pPDgWoYyNB9vtjk.png" alt="2.png"></p>
+</blockquote>
+]]></content>
+      <tags>
+        <tag>Bugku Web</tag>
       </tags>
   </entry>
 </search>
