@@ -13,7 +13,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-    Hexo博客搭建（Windows） |  Yozo&#39;s Blog
+    Bugku Web25 |  Yozo&#39;s Blog
   </title>
   <meta name="generator" content="hexo-theme-ayer">
   
@@ -60,7 +60,7 @@
     <main class="content on">
       <section class="outer">
   <article
-  id="post-搭建博客"
+  id="post-Bugku-Web25"
   class="article article-type-post"
   itemscope
   itemprop="blogPost"
@@ -71,22 +71,22 @@
     <header class="article-header">
        
 <h1 class="article-title sea-center" style="border-left:0" itemprop="name">
-  Hexo博客搭建（Windows）
+  Bugku Web25
 </h1>
  
 
     </header>
      
     <div class="article-meta">
-      <a href="/2020/11/04/%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/" class="article-date">
-  <time datetime="2020-11-04T15:58:58.000Z" itemprop="datePublished">2020-11-04</time>
+      <a href="/2021/04/26/Bugku-Web25/" class="article-date">
+  <time datetime="2021-04-26T06:24:56.000Z" itemprop="datePublished">2021-04-26</time>
 </a>   
 <div class="word_count">
     <span class="post-time">
         <span class="post-meta-item-icon">
             <i class="ri-quill-pen-line"></i>
             <span class="post-meta-item-text"> 字数统计:</span>
-            <span class="post-count">2k</span>
+            <span class="post-count">725</span>
         </span>
     </span>
 
@@ -95,7 +95,7 @@
         <span class="post-meta-item-icon">
             <i class="ri-book-open-line"></i>
             <span class="post-meta-item-text"> 阅读时长≈</span>
-            <span class="post-count">7 分钟</span>
+            <span class="post-count">2 分钟</span>
         </span>
     </span>
 </div>
@@ -110,61 +110,19 @@
   
     <div class="article-entry" itemprop="articleBody">
        
-  <p>突然就想要有一个自己的博客，契机是NKU丨🐏开始在CSDN上发自己做过的东西，再加上之前在大二偶然发现的南开的学姐的博客上学到了好多东西，便开始着手搭建自己的博客，共费时两个晚上方有了简陋的博客。以下大概记录下建立博客的过程以及踩过的坑。</p>
-<h1 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h1><h2 id="配置Github"><a href="#配置Github" class="headerlink" title="配置Github"></a>配置Github</h2><p>注册账号之类就不赘述了，新建一个<code>Repository</code>，名字必须是<code>yourusername.github.io</code>，比如我的就是<code>YozoOba.github.io</code>，选择public，其他可以跳过直接创建就好了。</p>
-<h2 id="安装node-js"><a href="#安装node-js" class="headerlink" title="安装node.js"></a>安装node.js</h2><p>直接从官网下载<a target="_blank" rel="noopener" href="https://nodejs.org/zh-cn/">node.js</a>,一路默认设置+next安装完成，安装地址可以改一下。<br>安装完成后便可以使用npm了，注意不是nmp（我用的时候一直报错，直到百度搜索的时候它提示我是不是要搜索“npm”才意识到，orz）<br>打开cmd输入<code>node -v</code>可以查看node.js版本来确认是否安装完成</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\14616&gt;node -v</span><br><span class="line">v14.15.0</span><br></pre></td></tr></table></figure>
-<p>这样就算安装成功了</p>
-<h2 id="安装Git"><a href="#安装Git" class="headerlink" title="安装Git"></a>安装Git</h2><p>同样直接官网下载<a target="_blank" rel="noopener" href="https://git-scm.com/download/win">Git</a>，安装完成之后设置环境变量（一般安装的时候都会自动设置的，如果安装后没法使用Git可以考虑是不是没有设置环境变量）</p>
-<p>下载完成后随意一个地方点右键可以打开<code>Git Bash</code>，先配置你的用户信息，在里面输入</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global user.name &quot;你的GitHub用户名&quot;</span><br><span class="line">git config --global user.email &quot;你的GitHub邮箱&quot;</span><br></pre></td></tr></table></figure>
-<p>然后再生成ssh密钥，这一步的目的是为设置Github密钥，这样就不用每次推送都输入密码。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -C &quot;你的GitHub邮箱&quot;</span><br></pre></td></tr></table></figure>
-<p>然后三个回车，找到生成的<code>.ssh</code>文件夹，一般存放在<code>C\users</code>目录下，复制id_rsa.pub中的密钥。</p>
-<p>也可以直接右键打开Git Gui，点击左上角<code>Help</code>中的<code>Show SSH Key </code>按照提示生成ssh密钥， 同样三个回车，它会直接显示出密钥直接复制，不需要再去文件里复制</p>
-<p>接下来打开Github，在<code>Setting</code>里找到<code>SSH and GPG keys</code>新建SSH，复制你本地生成的<code>public key</code>进去，然后保存，它会让你输入Github密码，然后就成功了。</p>
-<p>在Git Bash中输入ssh <a href="mailto:&#103;&#x69;&#116;&#x40;&#x67;&#x69;&#x74;&#x68;&#117;&#x62;&#x2e;&#x63;&#111;&#109;">&#103;&#x69;&#116;&#x40;&#x67;&#x69;&#x74;&#x68;&#117;&#x62;&#x2e;&#x63;&#111;&#109;</a>来验证是否成功，第一次验证的话会让你输入一个yes，显示successfully便成功了，but后面的语句不需要看</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh git@github.com</span><br></pre></td></tr></table></figure>
-<h2 id="安装Hexo"><a href="#安装Hexo" class="headerlink" title="安装Hexo"></a>安装Hexo</h2><p>hexo是通过npm命令安装的<br>首先建立一个hexo文件夹，放在你喜欢的位置，在该文件夹打开cmd或者power shell，不过推荐Git Bash，我用前两个的时候总莫名奇妙报错，用了Git Bash就顺畅许多嘿嘿。<br>安装hexo</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g hexo</span><br></pre></td></tr></table></figure>
-<h1 id="本地建立博客"><a href="#本地建立博客" class="headerlink" title="本地建立博客"></a>本地建立博客</h1><p>在hexo文件夹下打开Git Bash</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hexo init blog&#x2F;&#x2F;blog是项目的名字，你可以叫别的或者省略</span><br><span class="line">cd blog</span><br><span class="line">hexo g&#x2F;&#x2F;编译</span><br><span class="line">hexo s&#x2F;&#x2F;s就是server，执行完就可以通过4000端口预览网站</span><br></pre></td></tr></table></figure>
-<p>在浏览器输入<code>localhost：4000</code>便可以看到一个页面，这是默认的landscape主题<br>#将博客部署到Github<br>这里我们之前在Github上配置的仓库就有了用处，首先打开blog文件夹里的_config.yml文件进行配置，找到最下方的deploy进行配置，repo后面是你对应的仓库地址，由于已经设置过ssh，所以不需要写成https之类格式。<br>注意：<strong>冒号之后一定要有一个空格，不然会报错！冒号之后一定要有一个空格，不然会报错！冒号之后一定要有一个空格，不然会报错！</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repo: git@github.com:yourname&#x2F;yourname.github.io.git&#x2F;&#x2F;填充上yourname即可</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
-<p>然后安装hexo的插件，在Git Hash里输入命令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-deployer-git --save </span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>完成后输入</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure>
-<p>其中<code>hexo d</code>就是将你网站部署到GitHub上的命令，完成后再访问<code>https://yourname.github.io/</code>便会惊奇的发现你能通过互联网访问到了！！！</p>
-<h1 id="设置主题"><a href="#设置主题" class="headerlink" title="设置主题"></a>设置主题</h1><p>我用的是Ayer主题，作者的使用文档真的写的太太太详细了，设置主题这一部分基本没什么难度，直接参考<a target="_blank" rel="noopener" href="https://shen-yu.gitee.io/2019/ayer/">Ayer</a><br>按照作者的嘱咐安装好各种插件，修改好配置文件记得加空格就没多大问题。</p>
-<h1 id="博客使用"><a href="#博客使用" class="headerlink" title="博客使用"></a>博客使用</h1><p>其实执行到上一步之后我是一脸懵逼的，我究竟该怎么使用这个博客呢，为啥侧边栏就只有一个主页和一个归档能点其他都是404？？？<br>然后就去翻了好久hexo的官方文档，并且又去找了好多博客看，最后终于发现了是因为没有建立对应的page<br>按照<a target="_blank" rel="noopener" href="https://shen-yu.gitee.io/2019/ayer/">Ayer</a>的提示，然后打开终端（记得要在blog文件夹打开，不然无论你输入什么都是报错）<br>首先输入以下创建分类</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo new page categories</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>然后将以下内容复制到/source/categories/index.md 文件中</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">title: categories</span><br><span class="line">type: &quot;categories&quot;</span><br><span class="line">layout: &quot;categories&quot;</span><br><span class="line">---</span><br></pre></td></tr></table></figure>
-<p>然后输入以下创建标签</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo new page tags</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>同样需要配置</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">title: tags</span><br><span class="line">type: &quot;tags&quot;</span><br><span class="line">layout: &quot;tags&quot;</span><br><span class="line">---</span><br></pre></td></tr></table></figure>
-<p>友链、关于之类的，配置同以</p>
-<p>面对着空空如也的博客，我又开始迷茫了，那标签分类这些东西该怎么生成呢，又是翻了好多博客，终于有一个博主醍醐灌顶地说了一局，标签分类是不能独立存在的，必须依赖于博文存在<br>于是输入</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo new &lt;hello world&gt;</span><br></pre></td></tr></table></figure>
-<p>可以看到在blog\source_posts目录下出现了我们刚才创建的文档在配置中输入相关的tags和categories然后保存，注意<strong>冒号后面要有空格不然又会报错！！！</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">title: hello world</span><br><span class="line">tags: yourtags</span><br><span class="line">categories: yourcategories</span><br><span class="line">---</span><br></pre></td></tr></table></figure>
-<p>然后在终端中输入</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean </span><br><span class="line">hexo g</span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure>
-<p>等到命令执行完，我们再访问博客，便会发现已经有了相对应的标签和分类，至此，博客初步搭建完成，<em>★,°</em>:.☆(￣▽￣)/$:<em>.°★</em> 。</p>
-<h1 id="搭建过程中报错及解决办法"><a href="#搭建过程中报错及解决办法" class="headerlink" title="搭建过程中报错及解决办法"></a>搭建过程中报错及解决办法</h1><h2 id="关于副标题不显示的问题"><a href="#关于副标题不显示的问题" class="headerlink" title="关于副标题不显示的问题"></a>关于副标题不显示的问题</h2><p>在markdown中“#”与“##”之类的后面要先加一个空格在输入内容，否则可能不被认为是标题之类的而显示成##xxx之类的奇怪的东西</p>
-<h2 id="nmp不是内部命令，也不是可运行的程序"><a href="#nmp不是内部命令，也不是可运行的程序" class="headerlink" title="nmp不是内部命令，也不是可运行的程序"></a>nmp不是内部命令，也不是可运行的程序</h2><p>orz这个是因为把npm敲成了nmp哈哈哈。</p>
-<h2 id="git不是内部或外部命令-也不是可运行的程序"><a href="#git不是内部或外部命令-也不是可运行的程序" class="headerlink" title="git不是内部或外部命令,也不是可运行的程序"></a>git不是内部或外部命令,也不是可运行的程序</h2><p>这个可能是因为没有安装Git或者没有在系统变量里配置Git</p>
-<h2 id="hexo-无法加载文件-因为在此系统上禁止运行脚本。"><a href="#hexo-无法加载文件-因为在此系统上禁止运行脚本。" class="headerlink" title="hexo : 无法加载文件 ,因为在此系统上禁止运行脚本。"></a>hexo : 无法加载文件 ,因为在此系统上禁止运行脚本。</h2><p>以管理员身份打开cmd或者power shell，输入<code>set-executionpolicy remotesighed</code>选择是即可解决</p>
-<h2 id="hexo报错Usage-hexo"><a href="#hexo报错Usage-hexo" class="headerlink" title="hexo报错Usage: hexo "></a>hexo报错Usage: hexo <command></h2><p>这个前面提到过，是因为没有在blog文件下打开终端，只需要cd 到你创建的blog之类的文件夹就行了</p>
-<h2 id="can-not-read-an-implicit-mapping-pair-a-colon-is-missed-at-line-109-column"><a href="#can-not-read-an-implicit-mapping-pair-a-colon-is-missed-at-line-109-column" class="headerlink" title="can not read an implicit mapping pair; a colon is missed at line 109, column"></a>can not read an implicit mapping pair; a colon is missed at line 109, column</h2><p>这个是前面提到的空格问题，在它报错的地方加上应该有点空格就好</p>
-<h2 id="fatal-protocol-‘github-https’-is-not-supported"><a href="#fatal-protocol-‘github-https’-is-not-supported" class="headerlink" title="fatal: protocol ‘github:https’ is not supported"></a>fatal: protocol ‘github:https’ is not supported</h2><p>貌似还是因为空格问题，然后顺便把https样式的url改成了带@的那个</p>
-<h2 id="Could-not-resolve-hostname-github-Name-or-service-not-known"><a href="#Could-not-resolve-hostname-github-Name-or-service-not-known" class="headerlink" title="Could not resolve hostname github: Name or service not known"></a>Could not resolve hostname github: Name or service not known</h2><p>这个我记得我是用了Git Bash就好了</p>
-<h2 id="Spawn-failed"><a href="#Spawn-failed" class="headerlink" title="Spawn failed"></a>Spawn failed</h2><p>这个把博客文档里的.git删除掉，然后再在删除的地方输入以下命令新建一个仓库</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git init</span><br></pre></td></tr></table></figure>
-<h2 id="not-a-git-repository-or-any-of-the-parent-directories"><a href="#not-a-git-repository-or-any-of-the-parent-directories" class="headerlink" title="not a git repository (or any of the parent directories)"></a>not a git repository (or any of the parent directories)</h2><p>这个是因为上面那个错误把.git删了没有新建，<code>git init</code><br>之后就好了</p>
-<h2 id="err-YAMLException-can-not-read-a-block-mapping-entry"><a href="#err-YAMLException-can-not-read-a-block-mapping-entry" class="headerlink" title="err: YAMLException: can not read a block mapping entry"></a>err: YAMLException: can not read a block mapping entry</h2><p>还是空格问题，找到应该加空格的地方加空格就好了</p>
+  <h1 id="Bugku-Web-25"><a href="#Bugku-Web-25" class="headerlink" title="Bugku Web 25"></a>Bugku Web 25</h1><blockquote>
+<p>提示是SQL约束攻击</p>
+</blockquote>
+<h2 id="解题过程"><a href="#解题过程" class="headerlink" title="解题过程"></a>解题过程</h2><p>&emsp;&emsp;进入场景，看到是一个web管理系统，需要登陆，旁边可以看到注册的通道，先随意注册一个账号<br><img src="https://i.loli.net/2021/04/26/T3y4NEZFHDtqQ8a.png" alt="1.png"><br><img src="https://i.loli.net/2021/04/26/Itpq6YvGl3Z4OP2.png" alt="2.jpg"><br><img src="https://i.loli.net/2021/04/26/xUlTGruCJoZKLm9.png" alt="3.png"></p>
+<p>&emsp;&emsp;推测只有管理员账户才会显示出flag，利用SQL约束攻击，SQL语句会将查询的字段后的空格格式化，随意我们注册的用户名为<code>admin </code>，此时再登录就可以得到flag<br><img src="https://i.loli.net/2021/04/26/iIjEn9GfueochHr.png" alt="4.png"></p>
+<h2 id="SQL约束攻击"><a href="#SQL约束攻击" class="headerlink" title="SQL约束攻击"></a>SQL约束攻击</h2><p>&emsp;&emsp;例如下面的代码中，输入的字符串末尾空格会被删除，<code>admin</code>与<code>admin     </code>是一样的,这是因为在“字符串比较”期间，SQL会在内部使用空格来填充字符串，以便在比较之前使其它们的长度保持一致。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">$username = mysql_real_escape_string($_GET[&#x27;username&#x27;]);</span><br><span class="line">$password = mysql_real_escape_string($_GET[&#x27;password&#x27;]);</span><br><span class="line">$query = &quot;<span class="keyword">SELECT</span> *</span><br><span class="line">          <span class="keyword">FROM</span> <span class="keyword">users</span></span><br><span class="line">          <span class="keyword">WHERE</span> username=<span class="string">&#x27;$username&#x27;</span><span class="string">&quot;;</span></span><br><span class="line"><span class="string">$res = mysql_query($query, $database);</span></span><br><span class="line"><span class="string">if($res) &#123;</span></span><br><span class="line"><span class="string">  if(mysql_num_rows($res) &gt; 0) &#123;</span></span><br><span class="line"><span class="string">  &#125;</span></span><br><span class="line"><span class="string">  else &#123;</span></span><br><span class="line"><span class="string">    $query = &quot;</span><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="keyword">users</span>(username, <span class="keyword">password</span>)</span><br><span class="line">              <span class="keyword">VALUES</span> (<span class="string">&#x27;$username&#x27;</span>,<span class="string">&#x27;$password&#x27;</span>)<span class="string">&quot;;</span></span><br></pre></td></tr></table></figure>
+<p>&emsp;&emsp; 当注册时，后台一般先select一下用户名看看是否存在，然后再insert</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">$username = mysql_real_escape_string($_GET[&#x27;username&#x27;]);</span><br><span class="line">$password = mysql_real_escape_string($_GET[&#x27;password&#x27;]);</span><br><span class="line">$query = &quot;<span class="keyword">SELECT</span> *</span><br><span class="line">          <span class="keyword">FROM</span> <span class="keyword">users</span></span><br><span class="line">          <span class="keyword">WHERE</span> username=<span class="string">&#x27;$username&#x27;</span><span class="string">&quot;;</span></span><br><span class="line"><span class="string">$res = mysql_query($query, $database);</span></span><br><span class="line"><span class="string">if($res) &#123;</span></span><br><span class="line"><span class="string">  if(mysql_num_rows($res) &gt; 0) &#123;</span></span><br><span class="line"><span class="string">  &#125;</span></span><br><span class="line"><span class="string">  else &#123;</span></span><br><span class="line"><span class="string">    $query = &quot;</span><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="keyword">users</span>(username, <span class="keyword">password</span>)</span><br><span class="line">              <span class="keyword">VALUES</span> (<span class="string">&#x27;$username&#x27;</span>,<span class="string">&#x27;$password&#x27;</span>)<span class="string">&quot;;</span></span><br></pre></td></tr></table></figure>
+<p>这里注册时使用用户名+【大量空格】和随机密码注册即可完成攻击。</p>
+<p>    主要原理就是<code>insert</code>时候有<code>varchar(n)</code>的限制，大于n的时候会截取前n个存入。在数据库对字符串进行比较时，即select操作，如果两个字符串的长度不一样，则会将较短的字符串末尾填充空格，使两个字符串的长度一致。注册时select语句不会将<code>admin+[大量空格]</code>删减到n位，所以不会被select查出与admin重复，不会返回数据，接下来就可以插入<code>admin+[空格]（截取）</code>和自定义密码了。</p>
+<p>    如果使用用户名<code>“vampire”</code>和密码“<code>random_pass</code>”登录的话，对比时是<code>admin</code>与<code>admin+[大量空格]</code>，会将前面的<code>admin</code>添加空格与后面的长度相同在进行对比，那么返回的只能是我们自己注册的用户信息，而不会返回目标用户信息。SQL查询语句是一个and操作，如果密码不一样怎么会把目标用户的信息也返回回来?</p>
+<p>    当登陆时使用admin与自定义密码登陆，数据库将返回我们自己注册的账户信息，但是注意此处的<code>return $username</code>，虽然此时查询出来的是我们自己的用户信息，但是返回的用户名则是目标的用户名。如果此后的业务逻辑直接以该用户名为准，则我们就达到了水平越权的目的。</p>
  
       <!-- reward -->
       
@@ -235,12 +193,12 @@
     <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2020/11/04/%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/" alt="微信分享二维码">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2021/04/26/Bugku-Web25/" alt="微信分享二维码">
     </div>
 </div>
 
 <div id="share-mask"></div>  
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hexo/" rel="tag">hexo</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Bugku-Web/" rel="tag">Bugku Web</a></li></ul>
 
     </footer>
   </div>
@@ -248,15 +206,11 @@
    
   <nav class="article-nav">
     
-      <a href="/2020/11/11/20201111/" class="article-nav-link">
-        <strong class="article-nav-caption">上一篇</strong>
-        <div class="article-nav-title">
-          
-            区块链学习
-          
-        </div>
-      </a>
     
+      <a href="/2020/11/11/20201111/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">区块链学习</div>
+      </a>
     
   </nav>
 
