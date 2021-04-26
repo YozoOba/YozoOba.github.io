@@ -1,6 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Bugku Web29</title>
+    <url>/2021/04/26/Bugku-Web29/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Web29"><a href="#Bugku-Web29" class="headerlink" title="Bugku Web29"></a>Bugku Web29</h1><blockquote>
+<p>提示：各种绕过</p>
+</blockquote>
+<p>&emsp;&emsp;进入环境，看到了如下一段代码</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"> <span class="meta">&lt;?php</span></span><br><span class="line">highlight_file(<span class="string">&#x27;flag.php&#x27;</span>);</span><br><span class="line">$_GET[<span class="string">&#x27;id&#x27;</span>] = urldecode($_GET[<span class="string">&#x27;id&#x27;</span>]);</span><br><span class="line">$flag = <span class="string">&#x27;flag&#123;xxxxxxxxxxxxxxxxxx&#125;&#x27;</span>;</span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>($_GET[<span class="string">&#x27;uname&#x27;</span>]) <span class="keyword">and</span> <span class="keyword">isset</span>($_POST[<span class="string">&#x27;passwd&#x27;</span>])) &#123;</span><br><span class="line">    <span class="keyword">if</span> ($_GET[<span class="string">&#x27;uname&#x27;</span>] == $_POST[<span class="string">&#x27;passwd&#x27;</span>])</span><br><span class="line"></span><br><span class="line">        <span class="keyword">print</span> <span class="string">&#x27;passwd can not be uname.&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (sha1($_GET[<span class="string">&#x27;uname&#x27;</span>]) === sha1($_POST[<span class="string">&#x27;passwd&#x27;</span>])&amp;($_GET[<span class="string">&#x27;id&#x27;</span>]==<span class="string">&#x27;margin&#x27;</span>))</span><br><span class="line"></span><br><span class="line">        <span class="keyword">die</span>(<span class="string">&#x27;Flag: &#x27;</span>.$flag);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">print</span> <span class="string">&#x27;sorry!&#x27;</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span> </span><br></pre></td></tr></table></figure>
+<p>&emsp;&emsp;经过分析可以知道传入了三个参数，uname和id通过GET传入，passwd通过post传入，绕过条件是uname和passwd不能’==’而且他们的sha1要’==’，这时可以通过数组来绕过sha1构造输入<code>http://114.67.246.176:13764/?id=margin&amp;uname[]=12</code>,并通过hackbar 通过post传递<code>passwd[]=11</code>,便可成功绕过得到flag<br><img src="https://i.loli.net/2021/04/26/UpgSORAfkr4ajZF.png" alt="2.png"></p>
+<p>此处附上php中各种类型的比较</p>
+<p><img src="https://i.loli.net/2021/04/26/TDdn5l12otYbSxB.png" alt="3.png"></p>
+]]></content>
+      <tags>
+        <tag>Bugku Web</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Bugku Web28</title>
+    <url>/2021/04/26/Bugku-Web28/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Web28"><a href="#Bugku-Web28" class="headerlink" title="Bugku Web28"></a>Bugku Web28</h1><blockquote>
+<p>提示：请从本地访问</p>
+</blockquote>
+<p>&emsp;&emsp;这道题与之前一道一样，通过burp在header中加上<code>X-Forwarded-For: 127.0.0.1</code>即可得到flag<br><img src="https://i.loli.net/2021/04/26/YV2qiQy4kZGR8sd.png" alt="2.png"></p>
+]]></content>
+      <tags>
+        <tag>Bugku Web</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Bugku Web27</title>
+    <url>/2021/04/26/Bugku-Web27/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Web27"><a href="#Bugku-Web27" class="headerlink" title="Bugku Web27"></a>Bugku Web27</h1><blockquote>
+<p>提示：md5 collision</p>
+</blockquote>
+<h2 id="解题过程"><a href="#解题过程" class="headerlink" title="解题过程"></a>解题过程</h2><p>&emsp;&emsp;进入场景，发现整个页面只有一句话<code>please input a</code>，结合提示应该利用md5碰撞猜出a的值，进而得到flag<br>但是这个环境没有源码，所幸在评论区有老哥提供了源码</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">$md51 = md5(<span class="string">&#x27;QNKCDZO&#x27;</span>);</span><br><span class="line">$a = @$_GET[<span class="string">&#x27;a&#x27;</span>];</span><br><span class="line">$md52 = @md5($a);</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>($a))&#123;</span><br><span class="line">    <span class="keyword">if</span> ($a != <span class="string">&#x27;QNKCDZO&#x27;</span> &amp;&amp; $md51 == $md52) &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;nctf&#123;*****************&#125;&quot;</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;false!!!&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;please input a&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>&emsp;&emsp;通过查看源码可以发现，a的值要与<code>QNKCDZO</code>不同，但是他们的md5值要”==”,首先可以得到$md51的值为<code>0e830400451993494058024219903391</code>是0e开头的，而且比较用的是<code>==</code>而非<code>===</code>,该值会被解释为科学计数法，即为0的n次方，结果都为0，所以我们只需让a的md5值也为0e开头，比如<code>240610708</code>,其md5值为<code>0e462097431906509019562988736854</code>。</p>
+<p>&emsp;&emsp;构造输入<code>http://114.67.246.176:14991/?a=240610708</code>,即可得到flag<code>flag&#123;928c4b84b2bbe0904ea63baa2b5e7f26&#125;</code></p>
+<h2 id="php中运算符"><a href="#php中运算符" class="headerlink" title="php中运算符"></a>php中运算符</h2><p><img src="https://i.loli.net/2021/04/26/kR6PwZgad8rmvus.png" alt="3.png"></p>
+<h2 id="常见的以0e-开头的MD5碰撞"><a href="#常见的以0e-开头的MD5碰撞" class="headerlink" title="常见的以0e 开头的MD5碰撞"></a>常见的以0e 开头的MD5碰撞</h2><p>QNKCDZO<br>0e830400451993494058024219903391<br>240610708<br>0e462097431906509019562988736854<br>s878926199a<br>0e545993274517709034328855841020<br>s155964671a<br>0e342768416822451524974117254469<br>s214587387a<br>0e848240448830537924465865611904<br>s214587387a<br>0e848240448830537924465865611904<br>s878926199a<br>0e545993274517709034328855841020<br>s1091221200a<br>0e940624217856561557816327384675<br>s1885207154a<br>0e509367213418206700842008763514<br>s1502113478a<br>0e861580163291561247404381396064<br>s1885207154a<br>0e509367213418206700842008763514<br>s1836677006a<br>0e481036490867661113260034900752<br>s155964671a<br>0e342768416822451524974117254469<br>s1184209335a<br>0e072485820392773389523109082030<br>s1665632922a<br>0e731198061491163073197128363787<br>s1502113478a<br>0e861580163291561247404381396064<br>s1836677006a<br>0e481036490867661113260034900752<br>s1091221200a<br>0e940624217856561557816327384675<br>s155964671a<br>0e342768416822451524974117254469<br>s1502113478a<br>0e861580163291561247404381396064<br>s155964671a<br>0e342768416822451524974117254469<br>s1665632922a<br>0e731198061491163073197128363787<br>s155964671a<br>0e342768416822451524974117254469<br>s1091221200a<br>0e940624217856561557816327384675<br>s1836677006a<br>0e481036490867661113260034900752<br>s1885207154a<br>0e509367213418206700842008763514<br>s532378020a<br>0e220463095855511507588041205815<br>s878926199a<br>0e545993274517709034328855841020<br>s1091221200a<br>0e940624217856561557816327384675<br>s214587387a<br>0e848240448830537924465865611904<br>s1502113478a<br>0e861580163291561247404381396064<br>s1091221200a<br>0e940624217856561557816327384675<br>s1665632922a<br>0e731198061491163073197128363787<br>s1885207154a<br>0e509367213418206700842008763514<br>s1836677006a<br>0e481036490867661113260034900752<br>s1665632922a<br>0e731198061491163073197128363787<br>s878926199a<br>0e545993274517709034328855841020</p>
+]]></content>
+      <tags>
+        <tag>Bugku Web</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Bugku Web26</title>
+    <url>/2021/04/26/Bugku-Web26/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Web26"><a href="#Bugku-Web26" class="headerlink" title="Bugku Web26"></a>Bugku Web26</h1><blockquote>
+<p>Google</p>
+</blockquote>
+<p>进入场景，只有一行小字</p>
+<blockquote>
+<p>are you from google<br>推测应该将Referer改为谷歌的网址<br>用hackbar或者burpsuite都可以做到<br><img src="https://i.loli.net/2021/04/26/csMgnaRJ1Vr5OSz.png" alt="1.png"><br><img src="https://i.loli.net/2021/04/26/pPDgWoYyNB9vtjk.png" alt="2.png"></p>
+</blockquote>
+]]></content>
+      <tags>
+        <tag>Bugku Web</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Bugku Web25</title>
+    <url>/2021/04/26/Bugku-Web25/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Web-25"><a href="#Bugku-Web-25" class="headerlink" title="Bugku Web 25"></a>Bugku Web 25</h1><blockquote>
+<p>提示是SQL约束攻击</p>
+</blockquote>
+<h2 id="解题过程"><a href="#解题过程" class="headerlink" title="解题过程"></a>解题过程</h2><p>&emsp;&emsp;进入场景，看到是一个web管理系统，需要登陆，旁边可以看到注册的通道，先随意注册一个账号<br><img src="https://i.loli.net/2021/04/26/T3y4NEZFHDtqQ8a.png" alt="1.png"><br><img src="https://i.loli.net/2021/04/26/Itpq6YvGl3Z4OP2.png" alt="2.jpg"><br><img src="https://i.loli.net/2021/04/26/xUlTGruCJoZKLm9.png" alt="3.png"></p>
+<p>&emsp;&emsp;推测只有管理员账户才会显示出flag，利用SQL约束攻击，SQL语句会将查询的字段后的空格格式化，随意我们注册的用户名为<code>admin </code>，此时再登录就可以得到flag<br><img src="https://i.loli.net/2021/04/26/iIjEn9GfueochHr.png" alt="4.png"></p>
+<h2 id="SQL约束攻击"><a href="#SQL约束攻击" class="headerlink" title="SQL约束攻击"></a>SQL约束攻击</h2><p>&emsp;&emsp;例如下面的代码中，输入的字符串末尾空格会被删除，<code>admin</code>与<code>admin     </code>是一样的,这是因为在“字符串比较”期间，SQL会在内部使用空格来填充字符串，以便在比较之前使其它们的长度保持一致。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">$username = mysql_real_escape_string($_GET[&#x27;username&#x27;]);</span><br><span class="line">$password = mysql_real_escape_string($_GET[&#x27;password&#x27;]);</span><br><span class="line">$query = &quot;<span class="keyword">SELECT</span> *</span><br><span class="line">          <span class="keyword">FROM</span> <span class="keyword">users</span></span><br><span class="line">          <span class="keyword">WHERE</span> username=<span class="string">&#x27;$username&#x27;</span><span class="string">&quot;;</span></span><br><span class="line"><span class="string">$res = mysql_query($query, $database);</span></span><br><span class="line"><span class="string">if($res) &#123;</span></span><br><span class="line"><span class="string">  if(mysql_num_rows($res) &gt; 0) &#123;</span></span><br><span class="line"><span class="string">  &#125;</span></span><br><span class="line"><span class="string">  else &#123;</span></span><br><span class="line"><span class="string">    $query = &quot;</span><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="keyword">users</span>(username, <span class="keyword">password</span>)</span><br><span class="line">              <span class="keyword">VALUES</span> (<span class="string">&#x27;$username&#x27;</span>,<span class="string">&#x27;$password&#x27;</span>)<span class="string">&quot;;</span></span><br></pre></td></tr></table></figure>
+<p>&emsp;&emsp; 当注册时，后台一般先select一下用户名看看是否存在，然后再insert</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">$username = mysql_real_escape_string($_GET[&#x27;username&#x27;]);</span><br><span class="line">$password = mysql_real_escape_string($_GET[&#x27;password&#x27;]);</span><br><span class="line">$query = &quot;<span class="keyword">SELECT</span> *</span><br><span class="line">          <span class="keyword">FROM</span> <span class="keyword">users</span></span><br><span class="line">          <span class="keyword">WHERE</span> username=<span class="string">&#x27;$username&#x27;</span><span class="string">&quot;;</span></span><br><span class="line"><span class="string">$res = mysql_query($query, $database);</span></span><br><span class="line"><span class="string">if($res) &#123;</span></span><br><span class="line"><span class="string">  if(mysql_num_rows($res) &gt; 0) &#123;</span></span><br><span class="line"><span class="string">  &#125;</span></span><br><span class="line"><span class="string">  else &#123;</span></span><br><span class="line"><span class="string">    $query = &quot;</span><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="keyword">users</span>(username, <span class="keyword">password</span>)</span><br><span class="line">              <span class="keyword">VALUES</span> (<span class="string">&#x27;$username&#x27;</span>,<span class="string">&#x27;$password&#x27;</span>)<span class="string">&quot;;</span></span><br></pre></td></tr></table></figure>
+<p>这里注册时使用用户名+【大量空格】和随机密码注册即可完成攻击。</p>
+<p>    主要原理就是<code>insert</code>时候有<code>varchar(n)</code>的限制，大于n的时候会截取前n个存入。在数据库对字符串进行比较时，即select操作，如果两个字符串的长度不一样，则会将较短的字符串末尾填充空格，使两个字符串的长度一致。注册时select语句不会将<code>admin+[大量空格]</code>删减到n位，所以不会被select查出与admin重复，不会返回数据，接下来就可以插入<code>admin+[空格]（截取）</code>和自定义密码了。</p>
+<p>    如果使用用户名<code>“vampire”</code>和密码“<code>random_pass</code>”登录的话，对比时是<code>admin</code>与<code>admin+[大量空格]</code>，会将前面的<code>admin</code>添加空格与后面的长度相同在进行对比，那么返回的只能是我们自己注册的用户信息，而不会返回目标用户信息。SQL查询语句是一个and操作，如果密码不一样怎么会把目标用户的信息也返回回来?</p>
+<p>    当登陆时使用admin与自定义密码登陆，数据库将返回我们自己注册的账户信息，但是注意此处的<code>return $username</code>，虽然此时查询出来的是我们自己的用户信息，但是返回的用户名则是目标的用户名。如果此后的业务逻辑直接以该用户名为准，则我们就达到了水平越权的目的。</p>
+]]></content>
+      <tags>
+        <tag>Bugku Web</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>区块链学习</title>
     <url>/2020/11/11/20201111/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><hr>
@@ -232,59 +313,6 @@
 ]]></content>
       <tags>
         <tag>hexo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Bugku Web25</title>
-    <url>/2021/04/26/Bugku-Web25/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Web-25"><a href="#Bugku-Web-25" class="headerlink" title="Bugku Web 25"></a>Bugku Web 25</h1><blockquote>
-<p>提示是SQL约束攻击</p>
-</blockquote>
-<h2 id="解题过程"><a href="#解题过程" class="headerlink" title="解题过程"></a>解题过程</h2><p>&emsp;&emsp;进入场景，看到是一个web管理系统，需要登陆，旁边可以看到注册的通道，先随意注册一个账号<br><img src="https://i.loli.net/2021/04/26/T3y4NEZFHDtqQ8a.png" alt="1.png"><br><img src="https://i.loli.net/2021/04/26/Itpq6YvGl3Z4OP2.png" alt="2.jpg"><br><img src="https://i.loli.net/2021/04/26/xUlTGruCJoZKLm9.png" alt="3.png"></p>
-<p>&emsp;&emsp;推测只有管理员账户才会显示出flag，利用SQL约束攻击，SQL语句会将查询的字段后的空格格式化，随意我们注册的用户名为<code>admin </code>，此时再登录就可以得到flag<br><img src="https://i.loli.net/2021/04/26/iIjEn9GfueochHr.png" alt="4.png"></p>
-<h2 id="SQL约束攻击"><a href="#SQL约束攻击" class="headerlink" title="SQL约束攻击"></a>SQL约束攻击</h2><p>&emsp;&emsp;例如下面的代码中，输入的字符串末尾空格会被删除，<code>admin</code>与<code>admin     </code>是一样的,这是因为在“字符串比较”期间，SQL会在内部使用空格来填充字符串，以便在比较之前使其它们的长度保持一致。</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">$username = mysql_real_escape_string($_GET[&#x27;username&#x27;]);</span><br><span class="line">$password = mysql_real_escape_string($_GET[&#x27;password&#x27;]);</span><br><span class="line">$query = &quot;<span class="keyword">SELECT</span> *</span><br><span class="line">          <span class="keyword">FROM</span> <span class="keyword">users</span></span><br><span class="line">          <span class="keyword">WHERE</span> username=<span class="string">&#x27;$username&#x27;</span><span class="string">&quot;;</span></span><br><span class="line"><span class="string">$res = mysql_query($query, $database);</span></span><br><span class="line"><span class="string">if($res) &#123;</span></span><br><span class="line"><span class="string">  if(mysql_num_rows($res) &gt; 0) &#123;</span></span><br><span class="line"><span class="string">  &#125;</span></span><br><span class="line"><span class="string">  else &#123;</span></span><br><span class="line"><span class="string">    $query = &quot;</span><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="keyword">users</span>(username, <span class="keyword">password</span>)</span><br><span class="line">              <span class="keyword">VALUES</span> (<span class="string">&#x27;$username&#x27;</span>,<span class="string">&#x27;$password&#x27;</span>)<span class="string">&quot;;</span></span><br></pre></td></tr></table></figure>
-<p>&emsp;&emsp; 当注册时，后台一般先select一下用户名看看是否存在，然后再insert</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">$username = mysql_real_escape_string($_GET[&#x27;username&#x27;]);</span><br><span class="line">$password = mysql_real_escape_string($_GET[&#x27;password&#x27;]);</span><br><span class="line">$query = &quot;<span class="keyword">SELECT</span> *</span><br><span class="line">          <span class="keyword">FROM</span> <span class="keyword">users</span></span><br><span class="line">          <span class="keyword">WHERE</span> username=<span class="string">&#x27;$username&#x27;</span><span class="string">&quot;;</span></span><br><span class="line"><span class="string">$res = mysql_query($query, $database);</span></span><br><span class="line"><span class="string">if($res) &#123;</span></span><br><span class="line"><span class="string">  if(mysql_num_rows($res) &gt; 0) &#123;</span></span><br><span class="line"><span class="string">  &#125;</span></span><br><span class="line"><span class="string">  else &#123;</span></span><br><span class="line"><span class="string">    $query = &quot;</span><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="keyword">users</span>(username, <span class="keyword">password</span>)</span><br><span class="line">              <span class="keyword">VALUES</span> (<span class="string">&#x27;$username&#x27;</span>,<span class="string">&#x27;$password&#x27;</span>)<span class="string">&quot;;</span></span><br></pre></td></tr></table></figure>
-<p>这里注册时使用用户名+【大量空格】和随机密码注册即可完成攻击。</p>
-<p>    主要原理就是<code>insert</code>时候有<code>varchar(n)</code>的限制，大于n的时候会截取前n个存入。在数据库对字符串进行比较时，即select操作，如果两个字符串的长度不一样，则会将较短的字符串末尾填充空格，使两个字符串的长度一致。注册时select语句不会将<code>admin+[大量空格]</code>删减到n位，所以不会被select查出与admin重复，不会返回数据，接下来就可以插入<code>admin+[空格]（截取）</code>和自定义密码了。</p>
-<p>    如果使用用户名<code>“vampire”</code>和密码“<code>random_pass</code>”登录的话，对比时是<code>admin</code>与<code>admin+[大量空格]</code>，会将前面的<code>admin</code>添加空格与后面的长度相同在进行对比，那么返回的只能是我们自己注册的用户信息，而不会返回目标用户信息。SQL查询语句是一个and操作，如果密码不一样怎么会把目标用户的信息也返回回来?</p>
-<p>    当登陆时使用admin与自定义密码登陆，数据库将返回我们自己注册的账户信息，但是注意此处的<code>return $username</code>，虽然此时查询出来的是我们自己的用户信息，但是返回的用户名则是目标的用户名。如果此后的业务逻辑直接以该用户名为准，则我们就达到了水平越权的目的。</p>
-]]></content>
-      <tags>
-        <tag>Bugku Web</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Bugku Web26</title>
-    <url>/2021/04/26/Bugku-Web26/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Web26"><a href="#Bugku-Web26" class="headerlink" title="Bugku Web26"></a>Bugku Web26</h1><blockquote>
-<p>Google</p>
-</blockquote>
-<p>进入场景，只有一行小字</p>
-<blockquote>
-<p>are you from google<br>推测应该将Referer改为谷歌的网址<br>用hackbar或者burpsuite都可以做到<br><img src="https://i.loli.net/2021/04/26/csMgnaRJ1Vr5OSz.png" alt="1.png"><br><img src="https://i.loli.net/2021/04/26/pPDgWoYyNB9vtjk.png" alt="2.png"></p>
-</blockquote>
-]]></content>
-      <tags>
-        <tag>Bugku Web</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Bugku Web27</title>
-    <url>/2021/04/26/Bugku-Web27/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Web27"><a href="#Bugku-Web27" class="headerlink" title="Bugku Web27"></a>Bugku Web27</h1><blockquote>
-<p>提示：md5 collision</p>
-</blockquote>
-<h2 id="解题过程"><a href="#解题过程" class="headerlink" title="解题过程"></a>解题过程</h2><p>&emsp;&emsp;进入场景，发现整个页面只有一句话<code>please input a</code>，结合提示应该利用md5碰撞猜出a的值，进而得到flag<br>但是这个环境没有源码，所幸在评论区有老哥提供了源码</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">$md51 = md5(<span class="string">&#x27;QNKCDZO&#x27;</span>);</span><br><span class="line">$a = @$_GET[<span class="string">&#x27;a&#x27;</span>];</span><br><span class="line">$md52 = @md5($a);</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>($a))&#123;</span><br><span class="line">    <span class="keyword">if</span> ($a != <span class="string">&#x27;QNKCDZO&#x27;</span> &amp;&amp; $md51 == $md52) &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;nctf&#123;*****************&#125;&quot;</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;false!!!&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;please input a&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>&emsp;&emsp;通过查看源码可以发现，a的值要与<code>QNKCDZO</code>不同，但是他们的md5值要”==”,首先可以得到$md51的值为<code>0e830400451993494058024219903391</code>是0e开头的，而且比较用的是<code>==</code>而非<code>===</code>,该值会被解释为科学计数法，即为0的n次方，结果都为0，所以我们只需让a的md5值也为0e开头，比如<code>240610708</code>,其md5值为<code>0e462097431906509019562988736854</code>。</p>
-<p>&emsp;&emsp;构造输入<code>http://114.67.246.176:14991/?a=240610708</code>,即可得到flag<code>flag&#123;928c4b84b2bbe0904ea63baa2b5e7f26&#125;</code></p>
-<h2 id="php中运算符"><a href="#php中运算符" class="headerlink" title="php中运算符"></a>php中运算符</h2><p><img src="https://i.loli.net/2021/04/26/kR6PwZgad8rmvus.png" alt="3.png"></p>
-<h2 id="常见的以0e-开头的MD5碰撞"><a href="#常见的以0e-开头的MD5碰撞" class="headerlink" title="常见的以0e 开头的MD5碰撞"></a>常见的以0e 开头的MD5碰撞</h2><p>QNKCDZO<br>0e830400451993494058024219903391<br>240610708<br>0e462097431906509019562988736854<br>s878926199a<br>0e545993274517709034328855841020<br>s155964671a<br>0e342768416822451524974117254469<br>s214587387a<br>0e848240448830537924465865611904<br>s214587387a<br>0e848240448830537924465865611904<br>s878926199a<br>0e545993274517709034328855841020<br>s1091221200a<br>0e940624217856561557816327384675<br>s1885207154a<br>0e509367213418206700842008763514<br>s1502113478a<br>0e861580163291561247404381396064<br>s1885207154a<br>0e509367213418206700842008763514<br>s1836677006a<br>0e481036490867661113260034900752<br>s155964671a<br>0e342768416822451524974117254469<br>s1184209335a<br>0e072485820392773389523109082030<br>s1665632922a<br>0e731198061491163073197128363787<br>s1502113478a<br>0e861580163291561247404381396064<br>s1836677006a<br>0e481036490867661113260034900752<br>s1091221200a<br>0e940624217856561557816327384675<br>s155964671a<br>0e342768416822451524974117254469<br>s1502113478a<br>0e861580163291561247404381396064<br>s155964671a<br>0e342768416822451524974117254469<br>s1665632922a<br>0e731198061491163073197128363787<br>s155964671a<br>0e342768416822451524974117254469<br>s1091221200a<br>0e940624217856561557816327384675<br>s1836677006a<br>0e481036490867661113260034900752<br>s1885207154a<br>0e509367213418206700842008763514<br>s532378020a<br>0e220463095855511507588041205815<br>s878926199a<br>0e545993274517709034328855841020<br>s1091221200a<br>0e940624217856561557816327384675<br>s214587387a<br>0e848240448830537924465865611904<br>s1502113478a<br>0e861580163291561247404381396064<br>s1091221200a<br>0e940624217856561557816327384675<br>s1665632922a<br>0e731198061491163073197128363787<br>s1885207154a<br>0e509367213418206700842008763514<br>s1836677006a<br>0e481036490867661113260034900752<br>s1665632922a<br>0e731198061491163073197128363787<br>s878926199a<br>0e545993274517709034328855841020</p>
-]]></content>
-      <tags>
-        <tag>Bugku Web</tag>
       </tags>
   </entry>
 </search>

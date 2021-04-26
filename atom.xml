@@ -6,7 +6,7 @@
   <link href="http://example.com/atom.xml" rel="self"/>
   
   <link href="http://example.com/"/>
-  <updated>2021-04-26T08:29:10.519Z</updated>
+  <updated>2021-04-26T12:42:25.861Z</updated>
   <id>http://example.com/</id>
   
   <author>
@@ -15,6 +15,52 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Bugku Web29</title>
+    <link href="http://example.com/2021/04/26/Bugku-Web29/"/>
+    <id>http://example.com/2021/04/26/Bugku-Web29/</id>
+    <published>2021-04-26T11:44:33.000Z</published>
+    <updated>2021-04-26T12:42:25.861Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;link rel=&quot;stylesheet&quot; class=&quot;aplayer-secondary-style-marker&quot; href=&quot;\assets\css\APlayer.min.css&quot;&gt;&lt;script src=&quot;\assets\js\APlayer.min.js&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="Bugku Web" scheme="http://example.com/tags/Bugku-Web/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Bugku Web28</title>
+    <link href="http://example.com/2021/04/26/Bugku-Web28/"/>
+    <id>http://example.com/2021/04/26/Bugku-Web28/</id>
+    <published>2021-04-26T10:06:21.000Z</published>
+    <updated>2021-04-26T11:31:14.264Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;link rel=&quot;stylesheet&quot; class=&quot;aplayer-secondary-style-marker&quot; href=&quot;\assets\css\APlayer.min.css&quot;&gt;&lt;script src=&quot;\assets\js\APlayer.min.js&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="Bugku Web" scheme="http://example.com/tags/Bugku-Web/"/>
+    
+  </entry>
   
   <entry>
     <title>Bugku Web27</title>
