@@ -6,7 +6,7 @@
   <link href="http://example.com/atom.xml" rel="self"/>
   
   <link href="http://example.com/"/>
-  <updated>2021-05-11T09:51:13.162Z</updated>
+  <updated>2021-05-11T13:44:41.230Z</updated>
   <id>http://example.com/</id>
   
   <author>
@@ -15,6 +15,29 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Bugku Web35</title>
+    <link href="http://example.com/2021/05/11/Bugku-Web35/"/>
+    <id>http://example.com/2021/05/11/Bugku-Web35/</id>
+    <published>2021-05-11T13:01:39.000Z</published>
+    <updated>2021-05-11T13:44:41.230Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;link rel=&quot;stylesheet&quot; class=&quot;aplayer-secondary-style-marker&quot; href=&quot;\assets\css\APlayer.min.css&quot;&gt;&lt;script src=&quot;\assets\js\APlayer.min.js&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="Bugku Web" scheme="http://example.com/tags/Bugku-Web/"/>
+    
+  </entry>
   
   <entry>
     <title>CyberPunk</title>
